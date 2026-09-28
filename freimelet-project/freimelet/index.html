@@ -1,0 +1,1488 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Фреймлёт — твои работы. твои правила</title>
+<link rel="icon" type="image/png" href="assets/logo-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Montserrat:wght@600;700;800&display=swap" rel="stylesheet">
+<style>
+/* ============ TOKENS ============ */
+:root{
+  --ink:#12142c; --ink-2:#1b1e45; --ink-3:#262b63;
+  --bg:#f5f3fb; --surface:#ffffff; --surface-2:#faf9ff;
+  --text:#14162c; --text-soft:#63678a; --text-faint:#9598b8;
+  --line:#e7e5f3; --line-strong:#d8d5ee;
+  --lav:#7a6df0; --lav-deep:#5f4fe0; --lav-soft:#efebfe; --lav-soft-2:#e2dcfc;
+  --success:#26a677; --success-soft:#e2f7ef;
+  --warning:#dc9a2e; --warning-soft:#fbf0dc;
+  --danger:#e0567c; --danger-soft:#fce6ec;
+  --sky:#3a8bef; --sky-soft:#e4eefd;
+  --mint:#2fb891; --mint-soft:#e1f7ef;
+  --r-xl:28px; --r-lg:22px; --r-md:16px; --r-sm:11px;
+  --shadow:0 22px 50px -24px rgba(18,20,44,.28);
+  --shadow-sm:0 8px 22px -12px rgba(18,20,44,.18);
+  --font-d:'Montserrat',sans-serif; --font-b:'Inter',sans-serif;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --ink:#0b0c1e; --ink-2:#14163a; --ink-3:#1d2050;
+    --bg:#0c0d20; --surface:#14152e; --surface-2:#191b3a;
+    --text:#eef0fb; --text-soft:#a9adcf; --text-faint:#797ea8;
+    --line:#2a2c55; --line-strong:#363864;
+    --lav:#8f83ff; --lav-deep:#7364f7; --lav-soft:#22214d; --lav-soft-2:#2a2960;
+    --success:#38c290; --success-soft:#0f2c26;
+    --warning:#e3ac4c; --warning-soft:#332711;
+    --danger:#ea7291; --danger-soft:#331a24;
+    --sky:#5a9dfb; --sky-soft:#122a4a;
+    --mint:#43c99f; --mint-soft:#0f2b26;
+    --shadow:0 22px 50px -20px rgba(0,0,0,.55);
+    --shadow-sm:0 8px 22px -12px rgba(0,0,0,.5);
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"]{
+  --ink:#0b0c1e; --ink-2:#14163a; --ink-3:#1d2050;
+  --bg:#0c0d20; --surface:#14152e; --surface-2:#191b3a;
+  --text:#eef0fb; --text-soft:#a9adcf; --text-faint:#797ea8;
+  --line:#2a2c55; --line-strong:#363864;
+  --lav:#8f83ff; --lav-deep:#7364f7; --lav-soft:#22214d; --lav-soft-2:#2a2960;
+  --success:#38c290; --success-soft:#0f2c26;
+  --warning:#e3ac4c; --warning-soft:#332711;
+  --danger:#ea7291; --danger-soft:#331a24;
+  --sky:#5a9dfb; --sky-soft:#122a4a;
+  --mint:#43c99f; --mint-soft:#0f2b26;
+  color-scheme: dark;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:var(--font-b);-webkit-font-smoothing:antialiased;overflow-x:hidden}
+h1,h2,h3,.brand,.disp{font-family:var(--font-d)}
+button,input,textarea,select{font:inherit;color:inherit}
+button{cursor:pointer}
+a{color:inherit}
+:focus-visible{outline:2.5px solid var(--lav);outline-offset:2px}
+::selection{background:var(--lav-soft-2)}
+.icon{width:1em;height:1em;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;vertical-align:-.15em;flex:none}
+.icon-fill{fill:currentColor;stroke:none}
+.hide{display:none!important}
+@media (prefers-reduced-motion: reduce){*{animation-duration:.01ms!important;transition-duration:.01ms!important}}
+
+/* ============ PRIMITIVES ============ */
+.btn{border:0;border-radius:14px;padding:13px 19px;font-weight:700;font-size:14.5px;display:inline-flex;align-items:center;gap:8px;white-space:nowrap;transition:transform .15s ease,filter .15s ease}
+.btn:active{transform:scale(.97)}
+.btn.primary{background:var(--lav);color:#fff}
+.btn.primary:hover{background:var(--lav-deep)}
+.btn.dark{background:var(--ink);color:#fff}
+.btn.dark:hover{filter:brightness(1.25)}
+.btn.ghost{background:var(--lav-soft);color:var(--lav-deep)}
+.btn.line{background:transparent;border:1.5px solid var(--line-strong);color:var(--text)}
+.btn.sm{padding:9px 13px;font-size:13px;border-radius:11px}
+.btn.block{width:100%;justify-content:center}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.badge{display:inline-flex;align-items:center;gap:5px;padding:5px 10px;border-radius:999px;font-size:11.5px;font-weight:700;background:var(--lav-soft);color:var(--lav-deep)}
+.badge.success{background:var(--success-soft);color:var(--success)}
+.badge.warning{background:var(--warning-soft);color:var(--warning)}
+.badge.danger{background:var(--danger-soft);color:var(--danger)}
+.badge.neutral{background:var(--surface-2);color:var(--text-soft);border:1px solid var(--line)}
+.muted{color:var(--text-soft)}
+.faint{color:var(--text-faint)}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);box-shadow:var(--shadow-sm)}
+.notice{padding:15px 16px;border-radius:16px;background:var(--lav-soft);color:var(--text);font-size:13px;line-height:1.55;display:flex;gap:10px}
+.notice .icon{margin-top:2px;color:var(--lav-deep)}
+.notice.warn{background:var(--warning-soft)}
+.notice.warn .icon{color:var(--warning)}
+.chip{border:1.5px solid var(--line-strong);background:var(--surface);border-radius:999px;padding:9px 15px;font-size:13px;font-weight:600;color:var(--text-soft);display:inline-flex;align-items:center;gap:6px;transition:.15s}
+.chip.on{background:var(--ink);border-color:var(--ink);color:#fff}
+.avatar{border-radius:50%;background:var(--lav-soft-2);color:var(--lav-deep);display:grid;place-items:center;font-weight:800;font-family:var(--font-d);flex:none}
+.toolbar{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;margin:0 0 18px}
+.toolbar h2{margin:0;font-size:20px;letter-spacing:-.01em}
+.grid{display:grid;gap:16px}
+.grid.cols-3{grid-template-columns:repeat(3,1fr)}
+.grid.cols-2{grid-template-columns:repeat(2,1fr)}
+.section{margin:0 0 38px}
+.section:last-child{margin-bottom:0}
+
+/* ============ APP SHELL ============ */
+.app{min-height:100vh;display:grid;grid-template-columns:262px 1fr}
+.sidebar{background:var(--ink);color:#fff;padding:22px 16px;position:sticky;top:0;height:100vh;display:flex;flex-direction:column}
+.brand{display:flex;align-items:center;gap:11px;padding:6px 8px 26px;font-weight:800;font-size:15.5px;letter-spacing:.01em;line-height:1.15}
+.brand .mark{width:34px;height:34px;border-radius:10px;background:var(--lav);display:grid;place-items:center;flex:none;color:#fff;font-size:17px}
+.logo-mark{width:34px;height:34px;border-radius:10px;flex:none;object-fit:cover;display:block}
+.topbar-brand{display:none;align-items:center;gap:9px;font-family:var(--font-d);font-weight:800;font-size:13.5px;white-space:nowrap}
+.topbar-brand .logo-mark{width:28px;height:28px}
+.brand span{opacity:.55;font-weight:600;display:block;font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;margin-top:2px}
+.nav{display:grid;gap:3px}
+.nav button{border:0;background:transparent;color:#aeb1d6;text-align:left;padding:11.5px 13px;border-radius:13px;display:flex;align-items:center;gap:11px;font-size:14px;font-weight:600;width:100%}
+.nav button .icon{font-size:17px;opacity:.9}
+.nav button.active{background:var(--lav);color:#fff}
+.nav button:not(.active):hover{background:rgba(255,255,255,.07);color:#fff}
+.side-spacer{flex:1}
+.side-card{background:var(--ink-2);border-radius:18px;padding:15px;font-size:12.5px;line-height:1.5;color:#c7c9e6}
+.side-card b{color:#fff;font-size:13px}
+.side-card .badge{margin:8px 0}
+.side-logout{margin-top:12px;display:flex;align-items:center;gap:9px;color:#8b8fbd;font-size:13px;font-weight:600;padding:8px 13px}
+.side-logout:hover{color:#fff}
+
+.main{min-width:0}
+.topbar{height:76px;background:var(--surface);border-bottom:1px solid var(--line);display:flex;align-items:center;gap:16px;justify-content:space-between;padding:0 32px;position:sticky;top:0;z-index:15;backdrop-filter:blur(10px)}
+.search-wrap{position:relative;flex:1;max-width:440px}
+.search-wrap .icon{position:absolute;left:14px;top:50%;transform:translateY(-50%);color:var(--text-faint)}
+.search{background:var(--bg);border:1px solid var(--line);border-radius:13px;padding:11px 14px 11px 38px;width:100%}
+.topbar-right{display:flex;align-items:center;gap:10px}
+.icon-btn{width:42px;height:42px;border-radius:12px;background:var(--bg);border:1px solid var(--line);display:grid;place-items:center;position:relative;color:var(--text-soft)}
+.icon-btn .dot{position:absolute;top:9px;right:9px;width:7px;height:7px;border-radius:50%;background:var(--danger);border:2px solid var(--surface)}
+.profile-mini{display:flex;align-items:center;gap:10px;font-size:13px;font-weight:600;padding-left:4px;border-left:1px solid var(--line)}
+.profile-mini .avatar{width:38px;height:38px;font-size:14px}
+.profile-mini small{display:block;font-weight:500;color:var(--text-faint);font-size:11px}
+
+.content{max-width:1240px;margin:auto;padding:32px 32px 60px}
+.view{display:none}
+.view.active{display:block;animation:fadein .25s ease}
+@keyframes fadein{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+
+/* ============ HOME ============ */
+.hero{background:linear-gradient(150deg,var(--ink) 0%,var(--ink-3) 68%,#3a3390 130%);border-radius:32px;color:#fff;padding:38px;display:grid;grid-template-columns:1.4fr 1fr;gap:28px;position:relative;overflow:hidden}
+.hero::after{content:"";position:absolute;right:-90px;top:-90px;width:280px;height:280px;border-radius:50%;background:radial-gradient(circle,rgba(122,109,240,.55),transparent 70%)}
+.hero-eyebrow{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}
+.hero-pill{padding:6px 12px;border-radius:999px;background:rgba(255,255,255,.12);font-size:12px;font-weight:600}
+.hero h1{font-size:33px;line-height:1.16;margin:0 0 13px;letter-spacing:-.01em;max-width:480px}
+.hero p{color:#c9cdee;max-width:480px;line-height:1.6;margin:0 0 22px;font-size:14.5px}
+.hero-actions{display:flex;gap:10px;flex-wrap:wrap;position:relative;z-index:1}
+.hero-actions .btn.ghost{background:rgba(255,255,255,.14);color:#fff}
+.hero-actions .btn.ghost:hover{background:rgba(255,255,255,.22)}
+.hero-card{background:var(--surface);color:var(--text);border-radius:24px;padding:22px;align-self:stretch;display:flex;flex-direction:column;position:relative;z-index:1}
+.ring-wrap{display:flex;align-items:center;gap:16px;margin:6px 0 14px}
+.ring{position:relative;width:84px;height:84px;flex:none}
+.ring svg{transform:rotate(-90deg)}
+.ring-num{position:absolute;inset:0;display:grid;place-items:center;font-family:var(--font-d);font-weight:800;font-size:17px}
+.hero-stats{display:flex;gap:18px;margin-top:auto;padding-top:14px;border-top:1px solid var(--line)}
+.hero-stat b{display:block;font-family:var(--font-d);font-size:16px}
+.hero-stat span{font-size:11px;color:var(--text-faint)}
+
+.bento{display:grid;grid-template-columns:repeat(6,1fr);gap:14px}
+.direction{grid-column:span 2;min-height:132px;padding:19px;display:flex;flex-direction:column;justify-content:space-between;border:1px solid var(--line);position:relative;cursor:pointer;transition:.18s;background:var(--surface)}
+.direction:hover{transform:translateY(-3px);box-shadow:var(--shadow)}
+.direction .d-icon{width:42px;height:42px;border-radius:13px;display:grid;place-items:center;font-size:19px;background:color-mix(in srgb, var(--accent) 15%, transparent);color:var(--accent)}
+.direction b{display:block;margin:12px 0 3px;font-size:14.5px}
+.direction .muted{font-size:12.5px}
+.direction .d-count{position:absolute;top:16px;right:16px;font-size:11px;font-weight:700;color:var(--accent)}
+
+.feed{display:grid;grid-template-columns:1.35fr .65fr;gap:16px}
+.work-art{height:172px;border-radius:var(--r-lg) var(--r-lg) 0 0;display:grid;place-items:center;position:relative;overflow:hidden}
+.work-art::before{content:"";position:absolute;width:120px;height:120px;border-radius:50%;background:rgba(255,255,255,.4);top:-40px;right:-30px}
+.work-art::after{content:"";position:absolute;width:60px;height:60px;border-radius:50%;background:rgba(255,255,255,.3);bottom:-24px;left:-16px}
+.work-art .icon{width:34px;height:34px;color:#fff;opacity:.92;position:relative;z-index:1}
+.illu{width:76%;height:76%;position:relative;z-index:1;filter:drop-shadow(0 10px 18px rgba(18,20,44,.12))}
+.work-art .illu-dot{position:absolute;border-radius:50%;opacity:.5}
+.work{overflow:hidden;padding:0}
+.work-body{padding:16px}
+.work-body b{font-size:14.5px}
+.work-meta{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text-faint);margin:5px 0 10px}
+.work-stats{display:flex;gap:8px;flex-wrap:wrap}
+.ai-promo{background:linear-gradient(160deg,var(--lav-soft),var(--surface) 65%);border-color:var(--lav-soft-2);padding:22px;display:flex;flex-direction:column;gap:12px}
+.ai-promo .d-icon{width:44px;height:44px;border-radius:13px;background:var(--lav);color:#fff;display:grid;place-items:center;font-size:20px}
+
+/* ============ WORKS / MARKET ============ */
+.filters{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 20px}
+.sort-row{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--text-soft)}
+.wcard{padding:0;overflow:hidden;transition:.18s}
+.wcard:hover{transform:translateY(-3px);box-shadow:var(--shadow)}
+.wcard .work-body{display:flex;flex-direction:column;gap:2px}
+.wcard .row{display:flex;justify-content:space-between;align-items:center;margin-top:8px}
+.wcard .points{font-family:var(--font-d);font-weight:800;color:var(--lav-deep);font-size:13px}
+
+.market-hero{background:linear-gradient(120deg,var(--mint-soft),var(--surface) 60%);border-color:var(--line);padding:24px;display:grid;grid-template-columns:1.5fr 1fr;gap:20px;align-items:center}
+.channels{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+.channel-badge{display:inline-flex;align-items:center;gap:6px;padding:6px 11px;border-radius:10px;background:var(--surface);border:1px solid var(--line);font-size:11.5px;font-weight:700}
+.course-list{display:grid;gap:8px}
+.course-item{display:flex;align-items:center;justify-content:space-between;padding:13px 15px;border-radius:14px;background:var(--surface-2);font-size:13px;font-weight:600}
+.course-item .icon{color:var(--lav-deep)}
+
+/* ============ CHALLENGES / RATING ============ */
+.challenge-card{padding:19px;display:flex;flex-direction:column;gap:10px;border-top:3px solid var(--accent)}
+.challenge-card h3{margin:0;font-size:15.5px}
+.deadline{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text-faint);margin-top:auto}
+
+.tabs{display:flex;gap:6px;background:var(--surface-2);padding:5px;border-radius:14px;width:fit-content;margin-bottom:18px;flex-wrap:wrap}
+.tabs button{border:0;background:transparent;padding:9px 15px;border-radius:10px;font-size:13px;font-weight:700;color:var(--text-soft)}
+.tabs button.on{background:var(--surface);color:var(--text);box-shadow:var(--shadow-sm)}
+.leader-row{display:flex;align-items:center;gap:14px;padding:13px 8px;border-bottom:1px solid var(--line)}
+.leader-row:last-child{border:0}
+.leader-rank{width:26px;text-align:center;font-family:var(--font-d);font-weight:800;color:var(--text-faint)}
+.leader-row.top1 .leader-rank,.leader-row.top2 .leader-rank,.leader-row.top3 .leader-rank{color:var(--lav-deep)}
+.leader-name{flex:1;min-width:0}
+.leader-name b{display:block;font-size:13.5px}
+.leader-name span{font-size:11.5px;color:var(--text-faint)}
+.leader-pts{font-family:var(--font-d);font-weight:800;font-size:13.5px}
+.forum-card{background:linear-gradient(160deg,var(--ink),var(--ink-3));color:#fff;padding:24px;border-radius:var(--r-lg)}
+.criteria-bar{height:9px;border-radius:6px;overflow:hidden;display:flex;margin:12px 0 4px}
+.criteria-bar span{height:100%}
+
+/* ============ INTERNSHIPS / BLOG / PROFILE ============ */
+.intern-card{padding:18px;display:flex;flex-direction:column;gap:9px}
+.intern-card .row{display:flex;justify-content:space-between;align-items:center}
+.lock-wrap{text-align:center;padding:50px 20px;display:flex;flex-direction:column;align-items:center;gap:12px}
+.lock-icon{width:58px;height:58px;border-radius:16px;background:var(--warning-soft);color:var(--warning);display:grid;place-items:center;font-size:24px}
+
+.blog-feature{background:linear-gradient(140deg,var(--ink),#2c2870);color:#fff;padding:26px;border-radius:var(--r-lg);display:grid;grid-template-columns:1.3fr .7fr;gap:20px;align-items:center;margin-bottom:22px}
+.blog-card{padding:18px}
+.read-more{display:inline-flex;align-items:center;gap:5px;font-size:12.5px;font-weight:700;color:var(--lav-deep);margin-top:10px}
+
+.profile-grid{display:grid;grid-template-columns:.85fr 1.15fr;gap:18px}
+.profile-head{display:flex;gap:16px;align-items:center;padding:22px}
+.stat-row{display:flex;justify-content:space-between;align-items:center;padding:13px 4px;border-bottom:1px solid var(--line);font-size:13.5px}
+.stat-row:last-child{border:0}
+.stat-row b{font-family:var(--font-d)}
+.badges-strip{display:flex;gap:10px;flex-wrap:wrap;padding:18px}
+.trophy{display:flex;flex-direction:column;align-items:center;gap:6px;width:78px;text-align:center}
+.trophy .t-icon{width:48px;height:48px;border-radius:14px;background:var(--lav-soft);color:var(--lav-deep);display:grid;place-items:center;font-size:20px}
+.trophy span{font-size:10.5px;color:var(--text-faint);line-height:1.3}
+
+/* ============ AI VIEW ============ */
+.upload-zone{border:2px dashed var(--line-strong);border-radius:20px;padding:34px 20px;text-align:center;background:var(--surface-2);cursor:pointer}
+.upload-zone .u-icon{width:52px;height:52px;border-radius:16px;background:var(--lav-soft);color:var(--lav-deep);display:grid;place-items:center;margin:0 auto 14px;font-size:22px}
+.palette-row{display:flex;gap:8px;margin:12px 0}
+.swatch{width:30px;height:30px;border-radius:9px;border:1px solid rgba(0,0,0,.06)}
+.ai-tags{display:flex;gap:6px;flex-wrap:wrap;margin:10px 0}
+.ai-preview{width:100%;max-height:220px;object-fit:contain;border-radius:14px;background:var(--surface-2);margin-bottom:14px;display:none}
+.ai-loading{display:flex;align-items:center;gap:10px;font-size:13px;color:var(--text-soft)}
+.ai-spinner{width:16px;height:16px;border-radius:50%;border:2.5px solid var(--lav-soft-2);border-top-color:var(--lav-deep);animation:spin .7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.match-row{display:flex;align-items:center;gap:10px;margin:5px 0}
+.match-row .lbl{width:118px;flex:none;font-size:12px;color:var(--text-soft)}
+.match-bar{flex:1;height:8px;border-radius:5px;background:var(--surface-2);overflow:hidden}
+.match-bar span{display:block;height:100%;background:var(--lav);border-radius:5px}
+.match-row .pct{width:38px;text-align:right;font-size:11.5px;color:var(--text-faint);font-weight:700}
+.sugg-cols{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px}
+.sugg-cols h4{margin:0 0 6px;font-size:12.5px;text-transform:uppercase;letter-spacing:.06em;color:var(--text-faint)}
+.sugg-cols ul{margin:0;padding-left:18px;font-size:13px;line-height:1.7}
+
+/* ============ REGISTRATION ============ */
+.auth-tabs{display:flex;gap:6px;background:var(--surface-2);padding:5px;border-radius:14px;margin-bottom:20px}
+.auth-tab{flex:1;border:0;background:transparent;padding:10px;border-radius:10px;font-weight:700;font-size:13px;color:var(--text-soft)}
+.auth-tab.on{background:var(--surface);color:var(--text);box-shadow:var(--shadow-sm)}
+.reg-grid{display:grid;grid-template-columns:1fr 1fr;gap:0 10px}
+.check-row{display:flex;align-items:flex-start;gap:9px;font-size:12.5px;color:var(--text-soft);margin:12px 2px 4px;line-height:1.45}
+.check-row input{margin-top:3px;flex:none}
+
+/* ============ VIDEO FEED ============ */
+.vid-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:16px}
+.vid-card{padding:0;overflow:hidden;display:flex;flex-direction:column}
+.vid-thumb{position:relative;aspect-ratio:16/9;background:linear-gradient(135deg,var(--lav-soft),var(--surface-2));display:flex;align-items:center;justify-content:center;cursor:pointer;overflow:hidden}
+.vid-thumb iframe{width:100%;height:100%;border:0;position:absolute;inset:0}
+.vid-play-btn{width:50px;height:50px;border-radius:50%;background:rgba(18,20,44,.55);color:#fff;display:grid;place-items:center;backdrop-filter:blur(2px);position:relative;z-index:1;transition:.15s}
+.vid-thumb:hover .vid-play-btn{transform:scale(1.08)}
+.vid-plat{position:absolute;top:9px;left:9px;z-index:1;font-size:10.5px;font-weight:700;padding:4px 9px;border-radius:999px;background:rgba(18,20,44,.6);color:#fff}
+.vid-body{padding:13px 15px}
+.vid-body b{font-size:13.5px;display:block;line-height:1.35}
+.vid-body .muted{font-size:11.5px;margin-top:4px;display:block}
+
+/* ============ LOGIN ============ */
+.login-shell{min-height:100vh;display:grid;grid-template-columns:1fr 1fr}
+.login-side{background:var(--ink);color:#fff;padding:52px;display:flex;flex-direction:column;justify-content:space-between;position:relative;overflow:hidden}
+.login-side::before{content:"";position:absolute;width:420px;height:420px;border-radius:50%;background:radial-gradient(circle,rgba(122,109,240,.5),transparent 68%);right:-140px;bottom:-160px}
+.login-side::after{content:"";position:absolute;width:260px;height:260px;border-radius:50%;border:1px solid rgba(255,255,255,.12);left:-90px;top:-60px}
+.login-feats{display:grid;gap:16px;position:relative;z-index:1}
+.login-feat{display:flex;gap:13px;align-items:flex-start}
+.login-feat .f-icon{width:38px;height:38px;border-radius:11px;background:rgba(255,255,255,.1);display:grid;place-items:center;flex:none;margin-top:1px}
+.login-feat b{display:block;font-size:14px;margin-bottom:2px}
+.login-feat p{margin:0;font-size:12.5px;color:#b9bce0;line-height:1.5}
+.login-hero-text h1{font-size:38px;line-height:1.14;margin:14px 0 0;max-width:400px;position:relative;z-index:1}
+.login-main{display:flex;align-items:center;justify-content:center;padding:40px}
+.login-box{width:min(480px,100%)}
+.role-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:22px 0}
+.role{padding:16px;border:1.5px solid var(--line);border-radius:16px;background:var(--surface);text-align:left;display:flex;flex-direction:column;gap:6px}
+.role .r-icon{width:34px;height:34px;border-radius:10px;background:var(--surface-2);color:var(--text-soft);display:grid;place-items:center}
+.role.sel{border-color:var(--lav);background:var(--lav-soft)}
+.role.sel .r-icon{background:var(--lav);color:#fff}
+.role b{font-size:13.5px}
+.role span{font-size:11.5px;color:var(--text-faint)}
+.gu-btn{width:100%;justify-content:center;font-size:15px;padding:15px}
+.step-dots{display:flex;gap:6px;margin-bottom:18px}
+.step-dots i{width:22px;height:4px;border-radius:3px;background:var(--line-strong)}
+.step-dots i.on{background:var(--lav)}
+.dir-pick{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin:18px 0}
+.dir-opt{border:1.5px solid var(--line);border-radius:15px;padding:13px;display:flex;align-items:center;gap:10px;background:var(--surface);font-size:13px;font-weight:600}
+.dir-opt .icon{color:var(--accent)}
+.dir-opt.on{border-color:var(--accent);background:color-mix(in srgb, var(--accent) 10%, var(--surface))}
+
+/* ============ GATE / PARENT / PARTNER ============ */
+.gate-wrap{min-height:100vh;display:grid;place-items:center;padding:24px;background:var(--bg)}
+.gate-card{width:min(560px,100%);background:var(--surface);border-radius:28px;padding:38px;box-shadow:var(--shadow);text-align:center}
+.gate-icon{width:64px;height:64px;border-radius:18px;background:var(--warning-soft);color:var(--warning);display:grid;place-items:center;margin:0 auto 18px;font-size:26px}
+.steps-mini{display:flex;justify-content:center;gap:22px;margin:22px 0}
+.step-mini{display:flex;flex-direction:column;align-items:center;gap:7px;width:90px}
+.step-mini .s-icon{width:38px;height:38px;border-radius:11px;background:var(--surface-2);border:1px solid var(--line);display:grid;place-items:center;color:var(--text-faint)}
+.step-mini.done .s-icon{background:var(--success-soft);color:var(--success);border-color:transparent}
+.step-mini span{font-size:11px;color:var(--text-faint);text-align:center;line-height:1.3}
+
+.parent-shell,.partner-shell{min-height:100vh}
+.simple-top{height:72px;background:var(--surface);border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;padding:0 28px;position:sticky;top:0;z-index:10}
+.simple-content{max-width:1080px;margin:auto;padding:30px 24px 60px}
+.child-card{display:flex;align-items:center;gap:14px;padding:18px}
+.child-card .grow{flex:1}
+.switch{width:46px;height:26px;border-radius:20px;background:var(--line-strong);position:relative;border:0;flex:none}
+.switch i{position:absolute;top:3px;left:3px;width:20px;height:20px;border-radius:50%;background:#fff;transition:.2s;box-shadow:0 1px 3px rgba(0,0,0,.25)}
+.switch.on{background:var(--success)}
+.switch.on i{left:23px}
+.posting-card{padding:18px}
+.log-item{display:flex;gap:12px;padding:12px 0;border-bottom:1px solid var(--line);font-size:13px}
+.log-item:last-child{border:0}
+.log-dot{width:8px;height:8px;border-radius:50%;background:var(--lav);margin-top:6px;flex:none}
+
+/* ============ MODAL / TOAST / SHEET ============ */
+.modal{position:fixed;inset:0;background:rgba(10,11,26,.55);display:none;align-items:center;justify-content:center;padding:20px;z-index:60}
+.modal.open{display:flex}
+.modalbox{width:min(520px,100%);background:var(--surface);border-radius:26px;padding:26px;max-height:88vh;overflow:auto}
+.modalbox h3{margin:0 0 4px}
+.field{width:100%;padding:13px 14px;border:1.5px solid var(--line);border-radius:13px;margin:7px 0;background:var(--surface-2)}
+textarea.field{resize:vertical;min-height:90px}
+.modal-actions{display:flex;gap:10px;margin-top:14px}
+.toast{position:fixed;left:50%;bottom:26px;transform:translate(-50%,0);background:var(--ink);color:#fff;padding:13px 20px;border-radius:14px;display:flex;align-items:center;gap:9px;z-index:80;font-size:13.5px;font-weight:600;box-shadow:var(--shadow);opacity:0;pointer-events:none;transition:.25s}
+.toast.show{opacity:1;bottom:32px}
+.sheet-overlay{position:fixed;inset:0;background:rgba(10,11,26,.5);display:none;z-index:55}
+.sheet-overlay.open{display:block}
+.sheet{position:fixed;left:0;right:0;bottom:0;background:var(--surface);border-radius:22px 22px 0 0;padding:10px 18px 26px;z-index:56;transform:translateY(100%);transition:.25s}
+.sheet-overlay.open .sheet{transform:translateY(0)}
+.sheet-handle{width:38px;height:4px;background:var(--line-strong);border-radius:3px;margin:6px auto 14px}
+.sheet button{width:100%;border:0;background:transparent;text-align:left;padding:14px 6px;display:flex;align-items:center;gap:13px;font-size:14.5px;font-weight:600;border-bottom:1px solid var(--line)}
+.sheet button:last-child{border:0}
+.mobile-nav{display:none}
+
+/* ============ RESPONSIVE ============ */
+@media(max-width:980px){
+  .app{grid-template-columns:1fr}
+  .sidebar{display:none}
+  .content{padding:18px 16px 100px}
+  .topbar{padding:0 16px;height:64px}
+  .search-wrap{display:none}
+  .topbar-brand{display:flex}
+  .hero{grid-template-columns:1fr;padding:24px}
+  .hero h1{font-size:26px}
+  .bento{grid-template-columns:repeat(2,1fr)}
+  .direction{grid-column:span 1}
+  .feed,.profile-grid,.grid.cols-3,.grid.cols-2{grid-template-columns:1fr}
+  .market-hero,.blog-feature{grid-template-columns:1fr}
+  .login-shell{grid-template-columns:1fr}
+  .login-side{display:none}
+  .login-main{padding:26px}
+  .mobile-nav{position:fixed;display:grid;grid-template-columns:repeat(5,1fr);bottom:0;left:0;right:0;background:var(--surface);border-top:1px solid var(--line);z-index:40;padding-bottom:env(safe-area-inset-bottom)}
+  .mobile-nav button{border:0;background:transparent;padding:10px 3px 8px;font-size:10.5px;color:var(--text-faint);display:flex;flex-direction:column;align-items:center;gap:4px;font-weight:600}
+  .mobile-nav button .icon{font-size:19px}
+  .mobile-nav button.active{color:var(--lav-deep)}
+  .simple-content{padding:20px 16px 50px}
+}
+@media(max-width:560px){
+  .grid.cols-3,.grid.cols-2{grid-template-columns:1fr}
+  .bento{grid-template-columns:1fr 1fr}
+  .role-grid{grid-template-columns:1fr}
+  .dir-pick{grid-template-columns:1fr}
+  .reg-grid{grid-template-columns:1fr}
+  .sugg-cols{grid-template-columns:1fr}
+  .vid-grid{grid-template-columns:1fr}
+  .hero-stats{flex-wrap:wrap;row-gap:10px}
+  .profile-head{flex-direction:column;text-align:center}
+  .login-box{padding:0}
+  .toolbar{flex-direction:column;align-items:flex-start}
+}
+</style>
+</head>
+<body>
+
+<!-- ================= ICON SPRITE ================= -->
+<svg class="hide" aria-hidden="true">
+<symbol id="i-home" viewBox="0 0 24 24"><path d="M4 11.5 12 4l8 7.5"/><path d="M6 10.2V20h5v-5.5h2V20h5v-9.8"/></symbol>
+<symbol id="i-grid" viewBox="0 0 24 24"><rect x="4" y="4" width="7" height="7" rx="1.6"/><rect x="13" y="4" width="7" height="7" rx="1.6"/><rect x="4" y="13" width="7" height="7" rx="1.6"/><rect x="13" y="13" width="7" height="7" rx="1.6"/></symbol>
+<symbol id="i-package" viewBox="0 0 24 24"><path d="M12 3 4 7.2v9.6L12 21l8-4.2V7.2z"/><path d="M4 7.2 12 11l8-3.8"/><path d="M12 11v10"/></symbol>
+<symbol id="i-target" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="4.2"/><circle class="icon-fill" cx="12" cy="12" r=".8"/></symbol>
+<symbol id="i-trend" viewBox="0 0 24 24"><path d="M4 17 10 11 14 15 20 7"/><path d="M15 7h5v5"/></symbol>
+<symbol id="i-briefcase" viewBox="0 0 24 24"><rect x="3" y="8" width="18" height="12" rx="2.2"/><path d="M8 8V6.2a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2V8"/><path d="M3 13.2h18"/></symbol>
+<symbol id="i-sparkle" viewBox="0 0 24 24"><path class="icon-fill" d="M12 2.5l2 5.8 5.8 2-5.8 2L12 18l-2-5.7-5.8-2 5.8-2z"/></symbol>
+<symbol id="i-book" viewBox="0 0 24 24"><path d="M5 4.5h11a3 3 0 0 1 3 3V19H8.4a3.4 3.4 0 0 1-3.4-3.4z"/><path d="M8 8.5h7"/><path d="M8 12.3h7"/></symbol>
+<symbol id="i-user" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 4-6.2 8-6.2s8 2.2 8 6.2"/></symbol>
+<symbol id="i-search" viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M20 20l-4.6-4.6"/></symbol>
+<symbol id="i-bell" viewBox="0 0 24 24"><path d="M6.2 10a5.8 5.8 0 0 1 11.6 0v4.6l1.9 2.9H4.3l1.9-2.9z"/><path d="M10 20.2a2 2 0 0 0 4 0"/></symbol>
+<symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14"/><path d="M5 12h14"/></symbol>
+<symbol id="i-menu" viewBox="0 0 24 24"><path d="M4 6.5h16"/><path d="M4 12h16"/><path d="M4 17.5h16"/></symbol>
+<symbol id="i-close" viewBox="0 0 24 24"><path d="M5.5 5.5l13 13"/><path d="M18.5 5.5l-13 13"/></symbol>
+<symbol id="i-chevron-r" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"/></symbol>
+<symbol id="i-check" viewBox="0 0 24 24"><path d="M4 12.5l5 5L20 6"/></symbol>
+<symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><path d="M12 7.5v5l3.6 1.8"/></symbol>
+<symbol id="i-star" viewBox="0 0 24 24"><path class="icon-fill" d="M12 3.2l2.5 5.5 6 .6-4.5 4 1.3 5.9L12 16.1l-5.3 3.1 1.3-5.9-4.5-4 6-.6z"/></symbol>
+<symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 3.2 19 6v6c0 4.6-3 7.6-7 9-4-1.4-7-4.4-7-9V6z"/><path d="M9 12l2 2 4-4.2"/></symbol>
+<symbol id="i-login" viewBox="0 0 24 24"><path d="M10 3.5H6.4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2H10"/><path d="M14 16l4-4-4-4"/><path d="M18 12H8.5"/></symbol>
+<symbol id="i-users" viewBox="0 0 24 24"><circle cx="8.2" cy="9" r="3"/><circle cx="17" cy="10.2" r="2.5"/><path d="M2.3 20c.5-3.5 3-5.5 5.9-5.5s5.4 2 5.9 5.5"/><path d="M14.3 20c.3-2.4 1.6-4 3.6-4.6"/></symbol>
+<symbol id="i-upload" viewBox="0 0 24 24"><path d="M12 16V6"/><path d="M8 10l4-4 4 4"/><path d="M5 18.5h14"/></symbol>
+<symbol id="i-camera" viewBox="0 0 24 24"><rect x="3" y="7" width="18" height="13" rx="2.2"/><path d="M8 7l1.4-2.5h5.2L16 7"/><circle cx="12" cy="13.6" r="3.4"/></symbol>
+<symbol id="i-cube" viewBox="0 0 24 24"><path d="M12 3 20 7.4v9.2L12 21l-8-4.4V7.4z"/><path d="M4 7.4 12 11.8l8-4.4"/><path d="M12 11.8V21"/></symbol>
+<symbol id="i-shirt" viewBox="0 0 24 24"><path d="M8.5 4 4.5 6.8l2 3 2-1.1V19h7V8.7l2 1.1 2-3L14.5 4l-2.2 2h-1.6z"/></symbol>
+<symbol id="i-pen" viewBox="0 0 24 24"><path d="M4.5 19.5l1-4.2L15.8 5 19 8.2l-10.3 10.3z"/><path d="M14 6.8l3.2 3.2"/></symbol>
+<symbol id="i-music" viewBox="0 0 24 24"><path d="M9 18V5l10-2v13"/><circle cx="6.3" cy="18" r="2.4"/><circle cx="16.3" cy="16" r="2.4"/></symbol>
+<symbol id="i-heart" viewBox="0 0 24 24"><path d="M12 20s-7-4.4-9.2-8.8C1.6 8 2.9 5 5.9 4.4c2.2-.4 4.3.8 6.1 2.7 1.8-1.9 3.9-3.1 6.1-2.7 3 .6 4.3 3.6 2.9 6.8C18.9 15.6 12 20 12 20z"/></symbol>
+<symbol id="i-message" viewBox="0 0 24 24"><path d="M4 5h16v11.3H8.4L4 20.5z"/></symbol>
+<symbol id="i-arrow-r" viewBox="0 0 24 24"><path d="M4 12h14.5"/><path d="M13.5 6l6 6-6 6"/></symbol>
+<symbol id="i-cap" viewBox="0 0 24 24"><path d="M12 4 2.5 9 12 14l9.5-5z"/><path d="M6.3 11.4v5c0 1.2 3 2.7 5.7 2.7s5.7-1.5 5.7-2.7v-5"/><path d="M21.5 9v6"/></symbol>
+<symbol id="i-pin" viewBox="0 0 24 24"><path d="M12 21s6.5-6.1 6.5-11A6.5 6.5 0 0 0 5.5 10c0 4.9 6.5 11 6.5 11z"/><circle cx="12" cy="10" r="2.3"/></symbol>
+<symbol id="i-eye" viewBox="0 0 24 24"><path d="M2.5 12S6 5.5 12 5.5 21.5 12 21.5 12 18 18.5 12 18.5 2.5 12 2.5 12z"/><circle cx="12" cy="12" r="3"/></symbol>
+<symbol id="i-x-circle" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M9.5 9.5l5 5"/><path d="M14.5 9.5l-5 5"/></symbol>
+<symbol id="i-globe" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M3.5 12h17"/><path d="M12 3.5c2.6 2.3 4 5.3 4 8.5s-1.4 6.2-4 8.5c-2.6-2.3-4-5.3-4-8.5s1.4-6.2 4-8.5z"/></symbol>
+<symbol id="i-play" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path class="icon-fill" d="M10 8.3l6 3.7-6 3.7z"/></symbol>
+<symbol id="i-lock" viewBox="0 0 24 24"><rect x="5" y="10.5" width="14" height="9.5" rx="2.2"/><path d="M8 10.5V7.8a4 4 0 0 1 8 0v2.7"/></symbol>
+<symbol id="i-download" viewBox="0 0 24 24"><path d="M12 4v11.5"/><path d="M7.5 11.5 12 16l4.5-4.5"/><path d="M5 19.5h14"/></symbol>
+
+<!-- colourful sample illustrations -->
+<symbol id="illu-3d" viewBox="0 0 120 120">
+  <ellipse cx="47" cy="98" rx="30" ry="7" fill="#dbe6fb"/>
+  <rect x="18" y="52" width="10" height="26" rx="5" fill="#8fb4f5" transform="rotate(-18 23 65)"/>
+  <rect x="66" y="52" width="10" height="26" rx="5" fill="#8fb4f5" transform="rotate(18 71 65)"/>
+  <rect x="30" y="46" width="34" height="40" rx="10" fill="#5b8def"/>
+  <circle cx="47" cy="32" r="16" fill="#ffffff" stroke="#5b8def" stroke-width="3"/>
+  <circle cx="41" cy="31" r="2.4" fill="#5b8def"/><circle cx="53" cy="31" r="2.4" fill="#5b8def"/>
+  <path d="M42 37q5 4 10 0" stroke="#5b8def" stroke-width="2.4" fill="none" stroke-linecap="round"/>
+  <rect x="80" y="64" width="15" height="15" rx="4" fill="#f6c667" transform="rotate(14 87 71)"/>
+  <circle cx="92" cy="38" r="7" fill="#6fe3c4"/>
+</symbol>
+<symbol id="illu-fashion" viewBox="0 0 120 120">
+  <path d="M41 20 24 34l8 13 11-7v58h34V40l11 7 8-13-17-14-8 7H49z" fill="#e2688f"/>
+  <path d="M49 27h22" stroke="#c94f76" stroke-width="3" stroke-linecap="round"/>
+  <circle cx="60" cy="70" r="11" fill="#ffffff" opacity=".92"/>
+  <path d="M55 70l3.5 4 7-8.5" stroke="#c94f76" stroke-width="3.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+</symbol>
+<symbol id="illu-ceramic" viewBox="0 0 120 120">
+  <path d="M44 36h32l-4 13c6 8 9 18 9 27 0 16-10 26-23 26s-23-10-23-26c0-9 3-19 9-27z" fill="#e0a23a"/>
+  <rect x="42" y="27" width="36" height="11" rx="4" fill="#c1801e"/>
+  <path d="M78 48c8 2 12 8 10 17" stroke="#c1801e" stroke-width="4.5" fill="none" stroke-linecap="round"/>
+  <circle cx="58" cy="70" r="4" fill="#ffffff" opacity=".5"/><circle cx="70" cy="82" r="3" fill="#ffffff" opacity=".5"/><circle cx="48" cy="86" r="3.4" fill="#ffffff" opacity=".5"/>
+</symbol>
+<symbol id="illu-poster" viewBox="0 0 120 120">
+  <rect x="16" y="14" width="88" height="92" rx="12" fill="#fbfaff"/>
+  <path d="M30 72 60 30 90 72" stroke="#12142c" stroke-width="6.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+  <circle cx="60" cy="30" r="6.5" fill="#7a6df0"/>
+  <rect x="30" y="86" width="15" height="11" rx="3" fill="#7a6df0"/>
+  <rect x="49" y="86" width="15" height="11" rx="3" fill="#e0a23a"/>
+  <rect x="68" y="86" width="15" height="11" rx="3" fill="#2fb891"/>
+</symbol>
+<symbol id="illu-media" viewBox="0 0 120 120">
+  <rect x="18" y="38" width="82" height="55" rx="13" fill="#2fb891"/>
+  <rect x="42" y="25" width="18" height="15" rx="4" fill="#1f8b6d"/>
+  <circle cx="59" cy="66" r="21" fill="#ffffff"/>
+  <path d="M53 57l17 9-17 9z" fill="#2fb891"/>
+  <circle cx="89" cy="50" r="4" fill="#ffffff"/>
+</symbol>
+<symbol id="illu-music" viewBox="0 0 120 120">
+  <circle cx="45" cy="72" r="22" fill="#2a2350"/>
+  <circle cx="45" cy="72" r="6" fill="#9b6bd6"/>
+  <path d="M45 72V26a27 27 0 0 1 27 21" stroke="#9b6bd6" stroke-width="5.5" fill="none" stroke-linecap="round"/>
+  <rect x="80" y="52" width="6.5" height="30" rx="3.2" fill="#9b6bd6"/>
+  <rect x="91" y="40" width="6.5" height="42" rx="3.2" fill="#c7a6ea"/>
+  <rect x="102" y="58" width="6.5" height="24" rx="3.2" fill="#9b6bd6"/>
+</symbol>
+<symbol id="illu-bag" viewBox="0 0 120 120">
+  <path d="M32 46h56l6 51a8 8 0 0 1-8 8H34a8 8 0 0 1-8-8z" fill="#e2688f"/>
+  <path d="M42 46v-9a18 18 0 0 1 36 0v9" stroke="#c94f76" stroke-width="5.5" fill="none" stroke-linecap="round"/>
+  <path d="M50 67l5 6 10-12" stroke="#ffffff" stroke-width="4.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+</symbol>
+<symbol id="illu-jewelry" viewBox="0 0 120 120">
+  <circle cx="38" cy="40" r="14" fill="none" stroke="#3a8bef" stroke-width="5.5"/>
+  <path d="M38 54v14l7 10-7 6-7-6 7-10" fill="#f6c667"/>
+  <circle cx="82" cy="48" r="14" fill="none" stroke="#3a8bef" stroke-width="5.5"/>
+  <path d="M82 62v10l6 8-6 5-6-5 6-8" fill="#f6c667"/>
+</symbol>
+</svg>
+
+<!-- ================= LOGIN ================= -->
+<div id="loginScreen" class="login-shell">
+  <div class="login-side">
+    <div>
+      <div class="brand"><img class="logo-mark" src="assets/logo-icon.png" alt="Фреймлёт"><div>ФРЕЙМЛЁТ<br><span style="opacity:.8">твои работы. твои правила</span></div></div>
+      <div class="login-hero-text"><h1>Пространство, где увлечение становится профессией.</h1></div>
+    </div>
+    <div class="login-feats">
+      <div class="login-feat"><div class="f-icon"><svg class="icon"><use href="#i-shield"/></svg></div><div><b>Быстрая регистрация</b><p>ФИО, возраст и город указываются один раз — без лишних анкет.</p></div></div>
+      <div class="login-feat"><div class="f-icon"><svg class="icon"><use href="#i-users"/></svg></div><div><b>Согласие родителя за 3 дня</b><p>Прозрачный контроль для несовершеннолетних участников и их семей.</p></div></div>
+      <div class="login-feat"><div class="f-icon"><svg class="icon"><use href="#i-briefcase"/></svg></div><div><b>От витрины к стажировке</b><p>Баллы, рейтинг и форум платформы открывают путь к партнёрам с 16 лет.</p></div></div>
+    </div>
+  </div>
+
+  <div class="login-main">
+    <div class="login-box">
+
+      <div class="auth-tabs">
+        <button id="authTabRegister" class="auth-tab on" onclick="switchAuthTab('register')">Регистрация</button>
+        <button id="authTabLogin" class="auth-tab" onclick="switchAuthTab('login')">Войти</button>
+      </div>
+
+      <!-- step 1: role -->
+      <div id="stepRole">
+        <div class="step-dots"><i class="on"></i><i></i><i></i></div>
+        <h2 style="margin:0 0 6px">Кто вы?</h2>
+        <p class="muted" style="margin:0">Выберите роль, чтобы мы показали нужный сценарий регистрации.</p>
+        <div class="role-grid">
+          <button class="role sel" data-role="school" onclick="selectRole(this)"><div class="r-icon"><svg class="icon"><use href="#i-cap"/></svg></div><b>Школьник</b><span>14–17 лет</span></button>
+          <button class="role" data-role="student" onclick="selectRole(this)"><div class="r-icon"><svg class="icon"><use href="#i-user"/></svg></div><b>Студент</b><span>18+ / колледж / вуз</span></button>
+          <button class="role" data-role="parent" onclick="selectRole(this)"><div class="r-icon"><svg class="icon"><use href="#i-users"/></svg></div><b>Родитель</b><span>согласия и контроль</span></button>
+          <button class="role" data-role="partner" onclick="selectRole(this)"><div class="r-icon"><svg class="icon"><use href="#i-briefcase"/></svg></div><b>Партнёр</b><span>наём и стажировки</span></button>
+        </div>
+        <div id="roleNotice" class="notice"><svg class="icon"><use href="#i-shield"/></svg><div>После регистрации родителю нужно будет подтвердить участие в течение <b>3 дней</b>. До подтверждения доступен только просмотр — без публикации и продажи.</div></div>
+        <button class="btn dark gu-btn" style="margin-top:16px" onclick="goToRegisterStep()"><svg class="icon"><use href="#i-arrow-r"/></svg><span>Продолжить</span></button>
+      </div>
+
+      <!-- step 2: registration form -->
+      <div id="stepRegister" class="hide">
+        <div class="step-dots"><i class="on"></i><i class="on"></i><i></i></div>
+        <h2 style="margin:0 0 6px" id="registerTitle">Регистрация</h2>
+        <p class="muted" style="margin:0 0 4px">Это займёт меньше минуты. Данные видит только платформа.</p>
+        <div class="reg-grid">
+          <input class="field" id="regFio" placeholder="Фамилия Имя">
+          <input class="field" id="regDob" type="date" onchange="onDobChange()">
+          <input class="field" id="regCity" placeholder="Город">
+          <input class="field" id="regEmail" type="email" placeholder="Email">
+          <input class="field" id="regPass" type="password" placeholder="Пароль">
+          <input class="field" id="regPass2" type="password" placeholder="Повторите пароль">
+        </div>
+        <div id="minorBlock" class="notice warn hide" style="margin-top:6px">
+          <svg class="icon"><use href="#i-users"/></svg>
+          <div>
+            <b>Нужно согласие родителя</b><br>
+            Скачай бланк, распечатай и подпишите вместе — загрузить его можно будет из личного кабинета.
+            <div style="margin-top:9px"><button type="button" class="btn line sm" onclick="downloadConsentForm()"><svg class="icon"><use href="#i-download"/></svg>Скачать бланк согласия</button></div>
+          </div>
+        </div>
+        <label class="check-row">
+          <input type="checkbox" id="regAgreeData">
+          <span>Я даю согласие на обработку персональных данных</span>
+        </label>
+        <div id="regError" class="notice warn hide" style="margin-top:2px"></div>
+        <button class="btn primary block" style="margin-top:12px" onclick="submitRegister()">Создать аккаунт</button>
+        <button class="btn line block" style="margin-top:9px" onclick="backToRoleStep()">Назад</button>
+      </div>
+
+      <!-- step 3: directions (school/student only) -->
+      <div id="stepDirections" class="hide">
+        <div class="step-dots"><i class="on"></i><i class="on"></i><i class="on"></i></div>
+        <h2 style="margin:0 0 6px">Что тебе интересно?</h2>
+        <p class="muted" style="margin:0">Выбери одно или несколько направлений — так подборка и челленджи будут точнее.</p>
+        <div class="dir-pick" id="dirPick"></div>
+        <button class="btn primary block" onclick="finishOnboarding()">Продолжить</button>
+      </div>
+
+      <!-- login form -->
+      <div id="stepLogin" class="hide">
+        <h2 style="margin:0 0 6px">С возвращением</h2>
+        <p class="muted" style="margin:0 0 10px">Войди в свой аккаунт Фреймлёт.</p>
+        <input class="field" id="loginEmail" type="email" placeholder="Email">
+        <input class="field" id="loginPass" type="password" placeholder="Пароль">
+        <div id="loginError" class="notice warn hide" style="margin-top:2px"></div>
+        <button class="btn primary block" style="margin-top:10px" onclick="submitLogin()">Войти</button>
+        <p class="faint" style="text-align:center;font-size:11.5px;margin:14px 0 0">Прототип хранит аккаунт локально в этом браузере.</p>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- ================= PARTNER GATE ================= -->
+<div id="partnerGate" class="gate-wrap hide">
+  <div class="gate-card">
+    <div class="gate-icon"><svg class="icon" style="width:26px;height:26px"><use href="#i-clock"/></svg></div>
+    <h2 style="margin:0 0 8px">Заявка отправлена на проверку</h2>
+    <p class="muted" style="margin:0">Мы запросили подтверждение полномочий представителя организации. Регистрация для найма и предложения стажировок откроется автоматически, как только модератор проверит организацию.</p>
+    <div class="steps-mini">
+      <div class="step-mini done"><div class="s-icon"><svg class="icon"><use href="#i-check"/></svg></div><span>Заявка подана</span></div>
+      <div class="step-mini"><div class="s-icon"><svg class="icon"><use href="#i-clock"/></svg></div><span>Проверка<br>модератором · 3 дня</span></div>
+      <div class="step-mini"><div class="s-icon"><svg class="icon"><use href="#i-briefcase"/></svg></div><span>Доступ к найму</span></div>
+    </div>
+    <div class="notice warn"><svg class="icon"><use href="#i-shield"/></svg><div>Это защищает подростков: стажировки могут предлагать только верифицированные организации.</div></div>
+    <button class="btn dark block" style="margin-top:16px" onclick="enterPartnerDemo()">Открыть демо-кабинет партнёра</button>
+    <button class="btn line block" style="margin-top:9px" onclick="backToLogin()">Назад</button>
+  </div>
+</div>
+
+<!-- ================= PARENT DASHBOARD ================= -->
+<div id="parentApp" class="parent-shell hide">
+  <header class="simple-top">
+    <div class="brand" style="padding:0;color:var(--text)"><img class="logo-mark" style="width:34px;height:34px" src="assets/logo-icon.png" alt="Фреймлёт">Кабинет родителя</div>
+    <button class="btn line sm" onclick="backToLogin()"><svg class="icon"><use href="#i-close"/></svg>Выйти</button>
+  </header>
+  <div class="simple-content">
+    <div class="toolbar"><h2>Согласия и активность ребёнка</h2></div>
+    <div class="notice" style="margin-bottom:20px"><svg class="icon"><use href="#i-shield"/></svg><div>Все действия ребёнка — публикации, продажи, отклики на стажировки — требуют вашего согласия. Вы можете отозвать его в любой момент.</div></div>
+    <div class="grid cols-2" style="margin-bottom:26px">
+      <div class="card child-card">
+        <div class="avatar" style="width:50px;height:50px">А</div>
+        <div class="grow"><b>Алекс, 16 лет</b><div class="muted" style="font-size:12.5px">Екатеринбург · Дизайн, 3D, Fashion</div><div id="parentStatusBadge" class="badge warning" style="margin-top:6px">Ожидает согласия</div></div>
+        <button id="parentSwitch" class="switch" onclick="toggleConsent(this)"><i></i></button>
+      </div>
+      <div class="card child-card">
+        <div class="avatar" style="width:50px;height:50px;background:var(--sky-soft);color:var(--sky)">М</div>
+        <div class="grow"><b>Мила, 14 лет</b><div class="muted" style="font-size:12.5px">Казань · Ремесло, Тексты</div><div class="badge success" style="margin-top:6px">Согласие дано</div></div>
+        <button class="switch on"><i></i></button>
+      </div>
+    </div>
+    <div class="toolbar"><h2>Журнал активности — Алекс</h2></div>
+    <div class="card" style="padding:6px 20px">
+      <div class="log-item"><div class="log-dot"></div><div><b>Опубликована работа</b> «Кастомизация куртки»<div class="faint">2 дня назад · +10 баллов</div></div></div>
+      <div class="log-item"><div class="log-dot"></div><div><b>Участие в челлендже</b> «Новый шрифт для города»<div class="faint">4 дня назад · +30 баллов</div></div></div>
+      <div class="log-item"><div class="log-dot"></div><div><b>Регистрация на платформе</b><div class="faint">6 дней назад</div></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ================= PARTNER DASHBOARD ================= -->
+<div id="partnerApp" class="partner-shell hide">
+  <header class="simple-top">
+    <div class="brand" style="padding:0;color:var(--text)"><img class="logo-mark" style="width:34px;height:34px" src="assets/logo-icon.png" alt="Фреймлёт">Кабинет партнёра</div>
+    <button class="btn line sm" onclick="backToLogin()"><svg class="icon"><use href="#i-close"/></svg>Выйти</button>
+  </header>
+  <div class="simple-content">
+    <div class="toolbar"><h2>Вакансии и стажировки</h2><button class="btn primary" onclick="openPosting()"><svg class="icon"><use href="#i-plus"/></svg>Новая стажировка</button></div>
+    <div class="grid cols-3" id="postingsGrid">
+      <div class="card posting-card"><span class="badge">Удалённо</span><h3 style="margin:10px 0 4px;font-size:15px">Контент-дизайн</h3><p class="muted" style="font-size:12.5px;margin:0 0 10px">4 недели · требуется портфолио</p><div class="row" style="display:flex;justify-content:space-between;font-size:12.5px"><span class="muted">Откликов: 12</span><b style="color:var(--lav-deep)">верифицировано</b></div></div>
+      <div class="card posting-card"><span class="badge">Казань</span><h3 style="margin:10px 0 4px;font-size:15px">Мастерская аксессуаров</h3><p class="muted" style="font-size:12.5px;margin:0 0 10px">Очно · подготовка коллекции</p><div class="row" style="display:flex;justify-content:space-between;font-size:12.5px"><span class="muted">Откликов: 5</span><b style="color:var(--lav-deep)">верифицировано</b></div></div>
+    </div>
+    <div class="toolbar" style="margin-top:34px"><h2>Отклики от стажёров 16+</h2></div>
+    <div class="card" style="padding:6px 20px">
+      <div class="log-item"><div class="avatar" style="width:32px;height:32px;font-size:12px">Д</div><div><b>Дана, 17 лет</b> откликнулась на «Контент-дизайн»<div class="faint">Портфолио · 640 баллов · Fashion</div></div></div>
+      <div class="log-item"><div class="avatar" style="width:32px;height:32px;font-size:12px">И</div><div><b>Игорь, 16 лет</b> откликнулся на «Мастерская аксессуаров»<div class="faint">Портфолио · 512 баллов · Ремесло</div></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ================= MAIN APP ================= -->
+<div id="app" class="app hide">
+  <aside class="sidebar">
+    <div class="brand"><img class="logo-mark" src="assets/logo-icon.png" alt="Фреймлёт"><div>ФРЕЙМЛЁТ<br><span>твои работы. твои правила</span></div></div>
+    <div class="nav">
+      <button class="active" data-view="home"><svg class="icon"><use href="#i-home"/></svg>Главная</button>
+      <button data-view="works"><svg class="icon"><use href="#i-grid"/></svg>Работы</button>
+      <button data-view="videos"><svg class="icon"><use href="#i-play"/></svg>Лента творчества</button>
+      <button data-view="market"><svg class="icon"><use href="#i-package"/></svg>Маркетплейс</button>
+      <button data-view="challenges"><svg class="icon"><use href="#i-target"/></svg>Челленджи</button>
+      <button data-view="rating"><svg class="icon"><use href="#i-trend"/></svg>Рейтинг и форум</button>
+      <button data-view="internships"><svg class="icon"><use href="#i-briefcase"/></svg>Стажировки</button>
+      <button data-view="ai"><svg class="icon"><use href="#i-sparkle"/></svg>AI-стилист</button>
+      <button data-view="blog"><svg class="icon"><use href="#i-book"/></svg>Блог</button>
+      <button data-view="profile"><svg class="icon"><use href="#i-user"/></svg>Мой профиль</button>
+    </div>
+    <div class="side-spacer"></div>
+    <div id="sideStatus" class="side-card">
+      <b>Статус аккаунта</b>
+      <div id="sideStatusBadge" class="badge warning">Ожидается согласие родителя</div>
+      <div id="sideStatusText">Осталось 2 дня. Пока публикация и продажа недоступны.</div>
+    </div>
+    <button class="side-logout" onclick="backToLogin()"><svg class="icon"><use href="#i-close"/></svg>Выйти</button>
+  </aside>
+
+  <main class="main">
+    <header class="topbar">
+      <div class="topbar-brand"><img class="logo-mark" src="assets/logo-icon.png" alt="Фреймлёт">ФРЕЙМЛЁТ</div>
+      <div class="search-wrap"><svg class="icon"><use href="#i-search"/></svg><input class="search" placeholder="Поиск работ, людей, челленджей…"></div>
+      <div class="topbar-right">
+        <button class="btn primary sm" onclick="openUpload()" id="topUploadBtn"><svg class="icon"><use href="#i-plus"/></svg><span class="hide-xs">Добавить работу</span></button>
+        <button class="icon-btn" onclick="toast('Новых уведомлений: 3','i-bell')"><svg class="icon"><use href="#i-bell"/></svg><span class="dot"></span></button>
+        <div class="profile-mini"><div id="topAvatar" class="avatar" style="width:38px;height:38px">А</div><div id="topNameBlock">Алекс<small id="topNameSub">16 лет · Дизайн</small></div></div>
+      </div>
+    </header>
+
+    <div class="content">
+
+      <!-- HOME -->
+      <section id="home" class="view active">
+        <div class="hero section">
+          <div>
+            <div class="hero-eyebrow"><span class="hero-pill">14–18 лет</span><span class="hero-pill">Вся Россия</span><span class="hero-pill">Безопасная среда</span></div>
+            <h1>Покажи, что умеешь. Собери свой путь.</h1>
+            <p>Публикуй работы, участвуй в челленджах и учись у экспертов. Баллы открывают форум платформы, продажу через маркетплейсы и стажировки 16+.</p>
+            <div class="hero-actions">
+              <button class="btn primary" onclick="go('works')"><svg class="icon"><use href="#i-upload"/></svg>Добавить работу</button>
+              <button class="btn ghost" onclick="go('ai')"><svg class="icon"><use href="#i-sparkle"/></svg>Попробовать AI-стилиста</button>
+            </div>
+          </div>
+          <div class="hero-card">
+            <div class="muted" style="font-size:12.5px;font-weight:600">Прогресс сезона</div>
+            <div class="ring-wrap">
+              <div class="ring"><svg width="84" height="84"><circle cx="42" cy="42" r="36" stroke="var(--line)" stroke-width="8" fill="none"/><circle cx="42" cy="42" r="36" stroke="var(--lav)" stroke-width="8" fill="none" stroke-linecap="round" stroke-dasharray="226" stroke-dashoffset="63"/></svg><div class="ring-num">74%</div></div>
+              <div><div style="font-family:var(--font-d);font-weight:800;font-size:26px">740 <span style="font-size:12px;color:var(--text-faint);font-weight:600">баллов</span></div><div class="muted" style="font-size:12px">До нового уровня — 260 баллов</div></div>
+            </div>
+            <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:4px"><span class="badge">Дизайн</span><span class="badge">3D</span><span class="badge">Fashion</span></div>
+            <div class="hero-stats">
+              <div class="hero-stat"><b>#3</b><span>в направлении «Дизайн»</span></div>
+              <div class="hero-stat"><b>18</b><span>работ опубликовано</span></div>
+              <div class="hero-stat"><b>52</b><span>дня до конца сезона</span></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="section">
+          <div class="toolbar"><h2>Направления</h2><button class="btn line sm" onclick="go('works')">Все работы <svg class="icon"><use href="#i-arrow-r"/></svg></button></div>
+          <div class="bento">
+            <div class="direction" style="--accent:var(--lav)" onclick="go('works')"><div class="d-icon"><svg class="icon"><use href="#i-pen"/></svg></div><span class="d-count">2 480</span><div><b>Дизайн и графика</b><div class="muted">Иллюстрация · UI/UX · типографика</div></div></div>
+            <div class="direction" style="--accent:var(--sky)" onclick="go('works')"><div class="d-icon"><svg class="icon"><use href="#i-cube"/></svg></div><span class="d-count">1 190</span><div><b>3D и цифровое творчество</b><div class="muted">Модели · персонажи · motion</div></div></div>
+            <div class="direction" style="--accent:var(--danger)" onclick="go('works')"><div class="d-icon"><svg class="icon"><use href="#i-shirt"/></svg></div><span class="d-count">960</span><div><b>Fashion и предметный дизайн</b><div class="muted">Одежда · сумки · аксессуары</div></div></div>
+            <div class="direction" style="--accent:var(--warning)" onclick="go('works')"><div class="d-icon"><svg class="icon"><use href="#i-package"/></svg></div><span class="d-count">1 040</span><div><b>Ремесло</b><div class="muted">Керамика · дерево · текстиль</div></div></div>
+            <div class="direction" style="--accent:var(--mint)" onclick="go('works')"><div class="d-icon"><svg class="icon"><use href="#i-camera"/></svg></div><span class="d-count">2 010</span><div><b>Медиа</b><div class="muted">Фото · видео · подкасты</div></div></div>
+            <div class="direction" style="--accent:#9b6bd6" onclick="go('works')"><div class="d-icon"><svg class="icon"><use href="#i-music"/></svg></div><span class="d-count">870</span><div><b>Тексты и музыка</b><div class="muted">Литература · вокал · театр</div></div></div>
+          </div>
+        </div>
+
+        <div class="section">
+          <div class="toolbar"><h2>Рекомендовано тебе</h2></div>
+          <div class="feed">
+            <div class="card wcard">
+              <div class="work-art" style="background:#fbe9ef"><svg class="illu"><use href="#illu-fashion"/></svg></div>
+              <div class="work-body"><b>Кастомизация куртки «Новая форма»</b><div class="work-meta"><svg class="icon" style="width:13px;height:13px"><use href="#i-pin"/></svg>Екатеринбург · Fashion · 16 лет</div><div class="work-stats"><span class="badge neutral"><svg class="icon" style="width:12px;height:12px"><use href="#i-eye"/></svg>2 340</span><span class="badge success">+10 баллов</span></div></div>
+            </div>
+            <div class="card ai-promo">
+              <div class="d-icon"><svg class="icon"><use href="#i-sparkle"/></svg></div>
+              <h3 style="margin:0">AI-стилист</h3>
+              <p class="muted" style="margin:0;font-size:13px">Загрузи фото изделия — система определит визуальные признаки, типографику и подберёт стиль.</p>
+              <button class="btn dark sm" onclick="go('ai')">Открыть AI <svg class="icon"><use href="#i-arrow-r"/></svg></button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- WORKS -->
+      <section id="works" class="view">
+        <div class="toolbar"><h2>Работы сообщества</h2><button class="btn primary" onclick="openUpload()"><svg class="icon"><use href="#i-upload"/></svg>Загрузить работу</button></div>
+        <div class="filters">
+          <button class="chip on" onclick="filterChip(this)">Все</button>
+          <button class="chip" onclick="filterChip(this)">Дизайн</button>
+          <button class="chip" onclick="filterChip(this)">3D</button>
+          <button class="chip" onclick="filterChip(this)">Fashion</button>
+          <button class="chip" onclick="filterChip(this)">Ремесло</button>
+          <button class="chip" onclick="filterChip(this)">Медиа</button>
+          <button class="chip" onclick="filterChip(this)">Тексты</button>
+        </div>
+        <div class="grid cols-3">
+          <div class="card wcard"><div class="work-art" style="background:#e7f1fd"><svg class="illu"><use href="#illu-3d"/></svg></div><div class="work-body"><b>Минималистичный стул</b><div class="work-meta"><svg class="icon" style="width:13px;height:13px"><use href="#i-pin"/></svg>Новосибирск · 3D</div><div class="row"><span class="faint" style="font-size:12px">312 просмотров</span><span class="points">+10</span></div></div></div>
+          <div class="card wcard"><div class="work-art" style="background:#fbe9ef"><svg class="illu"><use href="#illu-bag"/></svg></div><div class="work-body"><b>Сумка из переработанного текстиля</b><div class="work-meta"><svg class="icon" style="width:13px;height:13px"><use href="#i-pin"/></svg>Казань · Ремесло</div><div class="row"><span class="faint" style="font-size:12px">198 просмотров</span><span class="points">+10</span></div></div></div>
+          <div class="card wcard"><div class="work-art" style="background:#f1e9fb"><svg class="illu"><use href="#illu-music"/></svg></div><div class="work-body"><b>Звуковой портрет города</b><div class="work-meta"><svg class="icon" style="width:13px;height:13px"><use href="#i-pin"/></svg>Владивосток · Музыка</div><div class="row"><span class="faint" style="font-size:12px">540 просмотров</span><span class="points">+10</span></div></div></div>
+          <div class="card wcard"><div class="work-art" style="background:#efeafd"><svg class="illu"><use href="#illu-poster"/></svg></div><div class="work-body"><b>Шрифтовой постер «Волга»</b><div class="work-meta"><svg class="icon" style="width:13px;height:13px"><use href="#i-pin"/></svg>Самара · Дизайн</div><div class="row"><span class="faint" style="font-size:12px">764 просмотра</span><span class="points">+10</span></div></div></div>
+          <div class="card wcard"><div class="work-art" style="background:#e5f8f0"><svg class="illu"><use href="#illu-media"/></svg></div><div class="work-body"><b>Мини-документалка «Двор»</b><div class="work-meta"><svg class="icon" style="width:13px;height:13px"><use href="#i-pin"/></svg>Псков · Медиа</div><div class="row"><span class="faint" style="font-size:12px">1 120 просмотров</span><span class="points">+10</span></div></div></div>
+          <div class="card wcard"><div class="work-art" style="background:#fbe9ef"><svg class="illu"><use href="#illu-fashion"/></svg></div><div class="work-body"><b>Худи с ручной вышивкой</b><div class="work-meta"><svg class="icon" style="width:13px;height:13px"><use href="#i-pin"/></svg>Уфа · Fashion</div><div class="row"><span class="faint" style="font-size:12px">430 просмотров</span><span class="points">+10</span></div></div></div>
+        </div>
+      </section>
+
+      <!-- MARKET -->
+      <section id="market" class="view">
+        <div class="toolbar"><h2>Маркетплейс ручных работ</h2><button class="btn primary" onclick="openMarket()"><svg class="icon"><use href="#i-plus"/></svg>Разместить изделие</button></div>
+        <div class="card market-hero section">
+          <div>
+            <span class="badge success">Ozon · Wildberries · ПВЗ</span>
+            <h3 style="margin:10px 0 6px">Продавай свои изделия по всей стране</h3>
+            <p class="muted" style="margin:0 0 4px;font-size:13.5px">Оформи карточку — модератор проверит материалы и безопасность, платформа поможет с логистикой через ближайший ПВЗ.</p>
+            <div class="channels"><span class="channel-badge"><svg class="icon" style="width:14px;height:14px"><use href="#i-check"/></svg>Ozon</span><span class="channel-badge"><svg class="icon" style="width:14px;height:14px"><use href="#i-check"/></svg>Wildberries</span><span class="channel-badge"><svg class="icon" style="width:14px;height:14px"><use href="#i-pin"/></svg>10 000+ ПВЗ</span></div>
+          </div>
+          <div class="course-list">
+            <div class="course-item"><span><svg class="icon"><use href="#i-camera"/></svg> Как сфотографировать изделие</span><svg class="icon" style="color:var(--text-faint)"><use href="#i-chevron-r"/></svg></div>
+            <div class="course-item"><span><svg class="icon"><use href="#i-target"/></svg> Как рассчитать цену</span><svg class="icon" style="color:var(--text-faint)"><use href="#i-chevron-r"/></svg></div>
+            <div class="course-item"><span><svg class="icon"><use href="#i-package"/></svg> Отправка через ПВЗ</span><svg class="icon" style="color:var(--text-faint)"><use href="#i-chevron-r"/></svg></div>
+          </div>
+        </div>
+        <div class="tabs"><button class="on" onclick="tabClick(this)">Все</button><button onclick="tabClick(this)">Готово к продаже</button><button onclick="tabClick(this)">На модерации</button></div>
+        <div class="grid cols-3">
+          <div class="card wcard"><div class="work-art" style="background:#fdf3e2"><svg class="illu"><use href="#illu-ceramic"/></svg></div><div class="work-body"><b>Керамическая кружка «Рассвет»</b><div class="work-meta">Ремесло · Кострома</div><div class="row"><b style="font-family:var(--font-d)">1 290 ₽</b><span class="badge success">Готово к продаже</span></div></div></div>
+          <div class="card wcard"><div class="work-art" style="background:#fbe9ef"><svg class="illu"><use href="#illu-bag"/></svg></div><div class="work-body"><b>Сумка-шоппер «Городской узор»</b><div class="work-meta">Fashion · Казань</div><div class="row"><b style="font-family:var(--font-d)">2 450 ₽</b><span class="badge warning">На модерации</span></div></div></div>
+          <div class="card wcard"><div class="work-art" style="background:#e7f1fd"><svg class="illu"><use href="#illu-jewelry"/></svg></div><div class="work-body"><b>Серьги 3D-печать «Орбита»</b><div class="work-meta">Ремесло · Пермь</div><div class="row"><b style="font-family:var(--font-d)">890 ₽</b><span class="badge success">Готово к продаже</span></div></div></div>
+        </div>
+      </section>
+
+      <!-- CHALLENGES -->
+      <section id="challenges" class="view">
+        <div class="toolbar"><h2>Челленджи</h2><span class="badge">+30 баллов за участие</span></div>
+        <div class="grid cols-3">
+          <div class="card challenge-card" style="--accent:var(--lav)"><span class="badge">Дизайн</span><h3>Новый шрифт для города</h3><p class="muted" style="font-size:13px;margin:0">Создай типографический постер, вдохновлённый своим регионом.</p><div class="deadline"><svg class="icon" style="width:14px;height:14px"><use href="#i-clock"/></svg>Осталось 6 дней</div><button class="btn dark sm block" onclick="participate()">Участвовать</button></div>
+          <div class="card challenge-card" style="--accent:var(--danger)"><span class="badge">Fashion</span><h3>Вторая жизнь вещи</h3><p class="muted" style="font-size:13px;margin:0">Покажи апсайклинг старой вещи в новом образе.</p><div class="deadline"><svg class="icon" style="width:14px;height:14px"><use href="#i-clock"/></svg>Осталось 3 дня</div><button class="btn dark sm block" onclick="participate()">Участвовать</button></div>
+          <div class="card challenge-card" style="--accent:var(--sky)"><span class="badge">3D</span><h3>Персонаж будущего</h3><p class="muted" style="font-size:13px;margin:0">Смоделируй персонажа и коротко расскажи его историю.</p><div class="deadline"><svg class="icon" style="width:14px;height:14px"><use href="#i-clock"/></svg>Осталось 9 дней</div><button class="btn dark sm block" onclick="participate()">Участвовать</button></div>
+          <div class="card challenge-card" style="--accent:var(--mint)"><span class="badge">Медиа</span><h3>60 секунд о моём городе</h3><p class="muted" style="font-size:13px;margin:0">Сними короткий вертикальный ролик о своём районе.</p><div class="deadline"><svg class="icon" style="width:14px;height:14px"><use href="#i-clock"/></svg>Осталось 12 дней</div><button class="btn dark sm block" onclick="participate()">Участвовать</button></div>
+          <div class="card challenge-card" style="--accent:var(--warning)"><span class="badge">Ремесло</span><h3>Материал из отходов</h3><p class="muted" style="font-size:13px;margin:0">Сделай изделие из переработанных материалов.</p><div class="deadline"><svg class="icon" style="width:14px;height:14px"><use href="#i-clock"/></svg>Осталось 5 дней</div><button class="btn dark sm block" onclick="participate()">Участвовать</button></div>
+          <div class="card challenge-card" style="--accent:#9b6bd6"><span class="badge">Музыка</span><h3>Саунд родного двора</h3><p class="muted" style="font-size:13px;margin:0">Запиши звуковую зарисовку своего района.</p><div class="deadline"><svg class="icon" style="width:14px;height:14px"><use href="#i-clock"/></svg>Осталось 8 дней</div><button class="btn dark sm block" onclick="participate()">Участвовать</button></div>
+        </div>
+      </section>
+
+      <!-- RATING / FORUM -->
+      <section id="rating" class="view">
+        <div class="toolbar"><h2>Рейтинг направлений</h2></div>
+        <div class="tabs"><button class="on" onclick="tabClick(this)">Дизайн</button><button onclick="tabClick(this)">3D</button><button onclick="tabClick(this)">Fashion</button><button onclick="tabClick(this)">Ремесло</button><button onclick="tabClick(this)">Медиа</button></div>
+        <div class="grid cols-2">
+          <div class="card" style="padding:8px 20px">
+            <div class="leader-row top1"><div class="leader-rank">1</div><div class="avatar" style="width:38px;height:38px">Е</div><div class="leader-name"><b>Ева К.</b><span>Санкт-Петербург</span></div><div class="leader-pts">1 240</div></div>
+            <div class="leader-row top2"><div class="leader-rank">2</div><div class="avatar" style="width:38px;height:38px">Р</div><div class="leader-name"><b>Роман Т.</b><span>Москва</span></div><div class="leader-pts">1 105</div></div>
+            <div class="leader-row top3"><div class="leader-rank">3</div><div class="avatar" style="width:38px;height:38px">А</div><div class="leader-name"><b>Алекс, ты</b><span>Екатеринбург</span></div><div class="leader-pts">740</div></div>
+            <div class="leader-row"><div class="leader-rank">4</div><div class="avatar" style="width:38px;height:38px">Н</div><div class="leader-name"><b>Ника С.</b><span>Краснодар</span></div><div class="leader-pts">690</div></div>
+            <div class="leader-row"><div class="leader-rank">5</div><div class="avatar" style="width:38px;height:38px">Т</div><div class="leader-name"><b>Тимур Б.</b><span>Казань</span></div><div class="leader-pts">610</div></div>
+          </div>
+          <div class="forum-card">
+            <span class="badge" style="background:rgba(255,255,255,.14);color:#fff">Форум платформы · сезон 1</span>
+            <h3 style="margin:12px 0 6px;color:#fff">4 лучших от каждого направления едут на форум</h3>
+            <p class="muted" style="color:#c9cdee;font-size:13px;margin:0 0 14px">20 участников со всей страны представят работы, встретятся с партнёрами и получат приглашения на стажировки.</p>
+            <div style="font-size:12px;color:#c9cdee;margin-bottom:5px">Критерии отбора</div>
+            <div class="criteria-bar"><span style="width:60%;background:var(--lav)"></span><span style="width:25%;background:#4fc1e9"></span><span style="width:15%;background:#e0a23a"></span></div>
+            <div style="display:flex;justify-content:space-between;font-size:11px;color:#a9adcf"><span>Баллы 60%</span><span>Качество 25%</span><span>Активность 15%</span></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- INTERNSHIPS -->
+      <section id="internships" class="view">
+        <div class="toolbar"><h2>Стажировки · 16+</h2></div>
+        <div id="internContent">
+          <div class="notice"><svg class="icon"><use href="#i-shield"/></svg><div>Отклики открываются после подтверждения возраста и согласия родителя. Все партнёры проходят верификацию, каждая стажировка — модерацию.</div></div>
+          <div class="grid cols-3" style="margin-top:18px">
+            <div class="card intern-card"><span class="badge">Удалённо</span><h3 style="margin:2px 0;font-size:15px">Контент-дизайн</h3><p class="muted" style="font-size:12.5px;margin:0">Визуалы для цифрового продукта · 4 недели</p><div class="row"><b style="color:var(--lav-deep)">+300 баллов</b><button class="btn ghost sm" onclick="applyIntern()">Откликнуться</button></div></div>
+            <div class="card intern-card"><span class="badge">Казань</span><h3 style="margin:2px 0;font-size:15px">Мастерская аксессуаров</h3><p class="muted" style="font-size:12.5px;margin:0">Разработка и подготовка коллекции</p><div class="row"><b style="color:var(--lav-deep)">+300 баллов</b><button class="btn ghost sm" onclick="applyIntern()">Откликнуться</button></div></div>
+            <div class="card intern-card"><span class="badge">Москва</span><h3 style="margin:2px 0;font-size:15px">Медиа-лаборатория</h3><p class="muted" style="font-size:12.5px;margin:0">Фото, видео и сторителлинг</p><div class="row"><b style="color:var(--lav-deep)">+300 баллов</b><button class="btn ghost sm" onclick="applyIntern()">Откликнуться</button></div></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- AI -->
+      <section id="ai" class="view">
+        <div class="toolbar"><h2>AI-стилист и визуальный анализ</h2></div>
+        <div class="feed">
+          <div class="card" style="padding:22px">
+            <h3 style="margin:0 0 4px">Загрузи фото</h3>
+            <p class="muted" style="font-size:13px;margin:0 0 14px">Изделие, эскиз или референс — модель разберёт цвет, контраст и фактуру прямо в браузере.</p>
+            <img id="aiPreview" class="ai-preview">
+            <div class="upload-zone" id="uploadZone" onclick="document.getElementById('file').click()">
+              <div class="u-icon"><svg class="icon"><use href="#i-upload"/></svg></div>
+              <b>Перетащи изображение сюда</b>
+              <p class="muted" style="font-size:12.5px;margin:4px 0 14px">или выбери файл · JPG / PNG / WEBP</p>
+              <input id="file" type="file" accept="image/*" hidden onchange="handleAiFile(this.files[0])">
+              <button class="btn primary sm" type="button">Выбрать файл</button>
+            </div>
+            <canvas id="aiCanvas" width="96" height="96" class="hide"></canvas>
+          </div>
+          <div id="aiResult" class="card" style="padding:22px;background:linear-gradient(160deg,var(--lav-soft),var(--surface) 70%);border-color:var(--lav-soft-2)">
+            <h3 style="margin:0 0 10px">Результат анализа</h3>
+            <p class="muted" style="font-size:13px">После загрузки здесь появятся:</p>
+            <ul class="muted" style="font-size:13px;line-height:1.7;padding-left:18px;margin:0">
+              <li>визуальные признаки и стилистическое направление;</li>
+              <li>подходящая палитра для работы;</li>
+              <li>рекомендации по одежде и аксессуарам;</li>
+              <li>смежные хобби и направления на платформе.</li>
+            </ul>
+          </div>
+        </div>
+        <div class="notice warn" style="margin-top:18px"><svg class="icon"><use href="#i-shield"/></svg><div>AI здесь — помощник для творчества, а не эксперт по внешности. Модель — собственная нейросеть, обученная на визуальных примерах внутри платформы: без сторонних AI-сервисов, без распознавания лиц и без сохранения фото для несовершеннолетних.</div></div>
+      </section>
+
+      <!-- VIDEOS -->
+      <section id="videos" class="view">
+        <div class="toolbar"><h2>Лента творчества</h2><span class="badge">Видео из соцсетей по направлениям</span></div>
+        <div class="filters" id="vidFilters"></div>
+        <div class="vid-grid" id="vidGrid"></div>
+      </section>
+
+      <!-- BLOG -->
+      <section id="blog" class="view">
+        <div class="toolbar"><h2>Блог развития</h2><button class="btn primary sm" onclick="toast('Демо-редактор поста','i-pen')"><svg class="icon"><use href="#i-plus"/></svg>Новый пост</button></div>
+        <div class="blog-feature">
+          <div><span class="badge" style="background:rgba(255,255,255,.14);color:#fff">Карьера</span><h3 style="color:#fff;margin:10px 0 6px">Что положить в отклик на стажировку</h3><p style="color:#c9cdee;font-size:13.5px;margin:0">Портфолио, короткое письмо и конкретные навыки — разбираем на примерах.</p></div>
+          <div style="width:100%;height:130px;border-radius:16px;background:rgba(255,255,255,.08);display:grid;place-items:center"><svg class="icon" style="width:34px;height:34px;color:#fff"><use href="#i-briefcase"/></svg></div>
+        </div>
+        <div class="grid cols-3">
+          <div class="card blog-card"><span class="badge">Навыки</span><h3 style="font-size:15px;margin:10px 0 4px">Как собрать первое портфолио</h3><p class="muted" style="font-size:13px;margin:0">5 проектов, которые показывают ход твоего мышления, а не количество.</p><span class="read-more">Читать <svg class="icon" style="width:13px;height:13px"><use href="#i-arrow-r"/></svg></span></div>
+          <div class="card blog-card"><span class="badge">Деньги</span><h3 style="font-size:15px;margin:10px 0 4px">Как рассчитать цену ручной работы</h3><p class="muted" style="font-size:13px;margin:0">Материалы + время + упаковка + комиссия: простая модель для старта.</p><span class="read-more">Читать <svg class="icon" style="width:13px;height:13px"><use href="#i-arrow-r"/></svg></span></div>
+          <div class="card blog-card"><span class="badge">Самозанятость</span><h3 style="font-size:15px;margin:10px 0 4px">ИП и самозанятость с 14 лет</h3><p class="muted" style="font-size:13px;margin:0">Что нужно знать перед первой продажей и какие документы собрать.</p><span class="read-more">Читать <svg class="icon" style="width:13px;height:13px"><use href="#i-arrow-r"/></svg></span></div>
+        </div>
+      </section>
+
+      <!-- PROFILE -->
+      <section id="profile" class="view">
+        <div class="profile-grid">
+          <div>
+            <div class="card profile-head section">
+              <div id="profAvatar" class="avatar" style="width:66px;height:66px;font-size:23px">А</div>
+              <div><h2 id="profName" style="margin:0 0 3px">Алекс, 16</h2><p id="profMeta" class="muted" style="margin:0;font-size:13px">Екатеринбург · Дизайн / 3D / Fashion</p></div>
+            </div>
+            <div class="card section" style="padding:6px 20px">
+              <div class="stat-row"><span>Баллы сезона</span><b>740</b></div>
+              <div class="stat-row"><span>Работ опубликовано</span><b>18</b></div>
+              <div class="stat-row"><span>Челленджей</span><b>7</b></div>
+              <div class="stat-row"><span>Лекториев пройдено</span><b>12</b></div>
+            </div>
+            <div id="consentCard" class="notice warn"><svg class="icon"><use href="#i-clock"/></svg><div><b>Согласие родителя: ожидается</b><br>Осталось 2 дня. <a href="#" onclick="toggleConsentDemo(event)" style="color:var(--lav-deep);font-weight:700">Демо: подтвердить сейчас →</a></div></div>
+          </div>
+          <div>
+            <div class="card section" style="padding:20px">
+              <h3 style="margin:0 0 4px">Моя траектория</h3>
+              <p class="muted" style="font-size:13px;margin:0 0 8px">Дизайн → 3D → Fashion → стажировка</p>
+              <div class="stat-row"><span>Регистрация + подтверждение</span><b>50</b></div>
+              <div class="stat-row"><span>Публикации</span><b>180</b></div>
+              <div class="stat-row"><span>Челленджи</span><b>210</b></div>
+              <div class="stat-row"><span>Лекторий</span><b>180</b></div>
+              <div class="stat-row"><span>Доп. достижения</span><b>120</b></div>
+            </div>
+            <div class="card">
+              <div style="padding:18px 18px 0"><h3 style="margin:0">Достижения</h3></div>
+              <div class="badges-strip">
+                <div class="trophy"><div class="t-icon"><svg class="icon"><use href="#i-star"/></svg></div><span>Топ-3 сезона</span></div>
+                <div class="trophy"><div class="t-icon"><svg class="icon"><use href="#i-target"/></svg></div><span>7 челленджей</span></div>
+                <div class="trophy"><div class="t-icon"><svg class="icon"><use href="#i-heart"/></svg></div><span>Любимец ленты</span></div>
+                <div class="trophy"><div class="t-icon"><svg class="icon"><use href="#i-book"/></svg></div><span>12 лекториев</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </div>
+  </main>
+</div>
+
+<!-- ================= MOBILE NAV + SHEET ================= -->
+<nav class="mobile-nav" id="mobileNav">
+  <button class="active" data-view="home"><svg class="icon"><use href="#i-home"/></svg>Главная</button>
+  <button data-view="works"><svg class="icon"><use href="#i-grid"/></svg>Работы</button>
+  <button data-view="ai"><svg class="icon"><use href="#i-sparkle"/></svg>AI</button>
+  <button data-view="internships"><svg class="icon"><use href="#i-briefcase"/></svg>Стажировки</button>
+  <button onclick="openSheet()"><svg class="icon"><use href="#i-menu"/></svg>Ещё</button>
+</nav>
+
+<div class="sheet-overlay" id="sheetOverlay" onclick="if(event.target===this)closeSheet()">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <button data-view="videos" onclick="sheetGo('videos')"><svg class="icon"><use href="#i-play"/></svg>Лента творчества</button>
+    <button data-view="market" onclick="sheetGo('market')"><svg class="icon"><use href="#i-package"/></svg>Маркетплейс</button>
+    <button data-view="challenges" onclick="sheetGo('challenges')"><svg class="icon"><use href="#i-target"/></svg>Челленджи</button>
+    <button data-view="rating" onclick="sheetGo('rating')"><svg class="icon"><use href="#i-trend"/></svg>Рейтинг и форум</button>
+    <button data-view="blog" onclick="sheetGo('blog')"><svg class="icon"><use href="#i-book"/></svg>Блог</button>
+    <button data-view="profile" onclick="sheetGo('profile')"><svg class="icon"><use href="#i-user"/></svg>Мой профиль</button>
+    <button onclick="closeSheet()" style="color:var(--danger)"><svg class="icon"><use href="#i-close"/></svg>Закрыть</button>
+  </div>
+</div>
+
+<!-- ================= MODALS ================= -->
+<div id="modal" class="modal">
+  <div class="modalbox">
+    <h3>Новая работа</h3>
+    <p class="muted" style="font-size:13px;margin:0 0 4px">Демо-форма загрузки. После проверки модератором работа появится в ленте и начислит баллы.</p>
+    <input class="field" placeholder="Название работы">
+    <input class="field" placeholder="Направление (например, Дизайн)">
+    <textarea class="field" placeholder="Описание и процесс создания"></textarea>
+    <div class="modal-actions"><button class="btn dark block" onclick="submitUpload()">Отправить на модерацию</button><button class="btn line" onclick="closeModal('modal')">Отмена</button></div>
+  </div>
+</div>
+
+<div id="marketModal" class="modal">
+  <div class="modalbox">
+    <h3>Разместить изделие</h3>
+    <p class="muted" style="font-size:13px;margin:0 0 4px">Карточка появится на модерации, затем на Ozon, Wildberries и в приложении.</p>
+    <input class="field" placeholder="Название изделия">
+    <input class="field" placeholder="Материалы">
+    <input class="field" placeholder="Цена, ₽">
+    <div class="modal-actions"><button class="btn dark block" onclick="submitMarket()">Отправить на модерацию</button><button class="btn line" onclick="closeModal('marketModal')">Отмена</button></div>
+  </div>
+</div>
+
+<script type="application/json" id="aiModelData">{"meta":{"architecture":[15,32,16,8],"feature_names":["r_mean","g_mean","b_mean","h_mean","s_mean","v_mean","brightness_std","saturation_std","warm_cool","colorfulness","edge_density","edge_std","dark_ratio","light_ratio","symmetry"],"val_accuracy":1.0},"norm":{"mu":[0.5720104848676548,0.5515538027783451,0.5841684021867821,0.5547709013635244,0.4573014844223766,0.6954272607504615,0.1585489231100146,0.16273829851368327,0.4879121496809571,0.40472519370765253,0.5318326612433827,0.7105551836183688,0.26092746310763876,0.39656017915702174,0.6736769167282867],"sigma":[0.2991745093892698,0.28976638594327386,0.3063442451880278,0.1900431460334622,0.29467510287881926,0.2658336533331178,0.08626299600111774,0.08327218293027791,0.18850524419942358,0.2779735760490528,0.2789685312737538,0.3314012585307824,0.36396465415451945,0.41002998394452356,0.26918884127213727]},"weights":{"W1":[[0.007927119999097131,-0.3765724075321001,0.10888321276895871,0.007368824993056163,-0.3886158507275209,-0.1291710622258152,0.1093715380741335,-0.2571932270824677,0.08730722073335907,-0.3363467010276925,0.36966254413411576,0.07100942565153082,-0.0640127981533745,-0.16820937342814954,0.01625931176407841,0.07313406473745729,0.020780837981904453,0.12510196867606999,-0.0032980050633493146,-0.13043242321884677,0.06270942306241563,0.0015374214995145384,0.0418857084617451,0.030897601996560636,0.005510855680033936,0.10976573922394904,0.06993324650193382,0.27139098834940445,0.013837739792450036,0.006961195678681166,0.4599061059444338,0.3162441664373715],[0.004842672456921593,0.02660028434579501,-0.05586686256862315,0.002253084678395114,-0.07938198394180117,0.05514332679075629,0.2817155184653357,-0.04732403503803703,0.009223105792104417,-0.18663439076252744,-0.04668571892819931,0.0354159457116538,-0.007430949876328983,-0.10254436040942794,-0.030478794566537435,0.20254463396461372,0.01603728401077315,0.10761405440262706,0.03360437043446847,0.2630381451536728,-0.0159297555332257,-0.008923092435135584,0.013771770654553376,0.011645845513327036,0.012924448818901133,0.44821159366483454,0.09512872501470353,0.14171524718325518,-0.0006381128156459266,0.008857723488027883,0.29253901143999245,0.16445110228828447],[0.006373741924433227,0.23400415936642452,-0.17395228424767623,-0.012423025741733535,-0.11040663745932777,-0.051099476040031976,-0.02350276534792125,-0.45837832395001804,-0.10572210780529148,-0.24165121189609393,0.3681147667039815,0.03623717515722246,0.013066359195507755,-0.30513937974377936,-0.05340212837833708,0.012740639752171122,0.05039815533377202,0.10468690974163523,0.042402085179311544,-0.1521283289978731,-0.031540654257507086,-0.02283858190303702,0.05988625129406252,0.013074435165949968,-0.0009481687362204248,0.06199730615960618,0.0742524577496494,0.24852963544532403,-0.023181296129534314,-0.01372189697259844,0.36413928767663634,-0.12777868953953916],[-0.0009987154974800462,-0.23278219019392973,-0.8053869010603577,-0.03374904450347003,-0.21892766854095577,0.10957632711469888,-0.058155967423599256,-0.6195091246630618,-0.34182113487871346,0.17367567334160822,0.329110622521926,-0.022563438588923183,0.011982149843608366,-0.41575692768746236,-0.07574579191897284,-0.23191498345987926,0.05891593759374908,0.20684070229909962,0.06773582189619129,-0.3756396108308691,0.2739527835146068,-0.1284667320210674,0.035964315791738005,-0.03407970363456369,-0.010898080008175642,0.049540704118907104,0.035669985161027075,-0.04116235535663146,-0.08690528610238059,-0.055672155700333514,0.32712152985665316,-0.6763020583713897],[-0.00026397305552934195,-0.4279171609967192,0.10832681335793873,-0.0034033715761066503,-0.9950803004284525,-0.4438134113463456,0.045341826711539544,-1.473484295826665,-0.010270472468970395,0.22493558943601588,1.3685704738259363,0.02779257213574732,0.03271074795228477,0.10632805564701431,0.025743029193619666,0.21466994930482297,-0.019359135001172225,-0.12231161387334484,-0.004630502209064946,-0.004684861039742649,1.7997323318897764,0.020776543884229687,-0.30345662538687274,-0.003919295421132858,0.011486236521139776,0.44071807304098715,-0.014406462862479926,0.1973138243618101,0.019643547367535305,0.007849629743259465,-0.05262230955877891,-0.01835948402043368],[0.010954001768756768,-0.06619489839738574,-0.07956252483381397,-0.0029419172595897903,-0.16709250610567797,-0.2147062318563152,0.14875918691036766,-0.10667653821183934,-0.00320695732499829,-0.30919874929446706,0.2033867200989497,0.08835985530173611,0.008984976108163036,-0.6275546574504834,-0.021442088517386198,0.26564468762304777,0.032809511642321175,0.0897260290083421,-0.01846540477153621,-0.03217507284691525,0.5207692933491656,0.007177557420211997,0.07608902392705945,0.02888714972008575,0.017341412887853257,0.4497598096841758,0.12084650469259137,0.37982642959742596,0.01458993539429529,0.005031759379335671,0.4616757083727422,0.1393171113746456],[0.0036311074915163304,0.02294396090341236,-1.3230398509901307,-0.0009611863493992359,0.1265447090424966,0.507502060534155,0.12100108806633425,-1.4153678495905728,-0.01579865485350549,0.6496646546426508,0.44155076932088666,0.04467497350641071,-0.07490620504619855,0.00045232915910004955,-0.10995131996326839,-0.12841974152724456,0.14168392615979777,-0.026483785404702222,0.41685833045749254,0.10294281627237355,1.317520402144088,0.0019978973189622427,-0.26202213709378325,-0.026371478277625517,0.0011919300862497692,0.33549635799058813,-0.17521804505723393,-0.27430264958348893,-0.025022105482020277,0.00075686607331301,-0.10599504047063489,0.10284450381967414],[0.0019468453826073898,-0.210277747819565,0.7764144062073516,-0.003164407105305613,-0.47013554988618517,-0.5587129869298469,0.10994344675044714,0.7933958124458165,0.0022563788335716937,-0.18017772755801542,1.3018414764463595,0.1291231703722294,-0.008019652170778374,-0.5020807655239363,0.003024029403411705,0.11771347204938688,0.10543924756407992,-0.09003612834085993,-0.5788891856666135,-0.4134438339164259,-1.2043559115884555,0.05271899535464375,-0.22549816786552046,0.02274373318063018,-0.001730389646140741,0.696696378274571,-0.1244706977350435,0.3135976149540773,0.01651940045901273,0.012894750525771175,0.41113612894310836,0.2014142410029241],[0.0003505882365412974,-0.8571193980342829,0.4397367711105901,0.028339358081895562,0.17044683452976375,-0.050605470482334276,0.14455870447419658,0.0784265137514587,0.2844836403417763,-0.10873232077597735,-0.2203046255975122,0.0341639753561405,-0.09577179318460052,-0.15822883495129061,0.1348536900349508,0.12816213132147486,-0.030485609985820825,0.001719584030939373,-0.04148037702304683,0.0824133895507737,-0.2409654490728829,0.061847691882276574,-0.09179417186127609,0.012409107450108458,0.011755441851265199,0.11700376237871866,-0.013755605371540853,-0.06455907065578606,0.05458927397091454,0.034782092615270814,-0.001211062061442796,0.7061594327587245],[0.0031261611380908566,-0.22029079914345834,-0.6473185120364753,-0.014796224843233194,0.15177144023570077,-0.6064006741925348,0.0579932750854117,0.5276059334012326,-0.08111451971540161,0.1241758503111551,-0.4974095955585952,0.06620938797078708,0.09878200740354762,-0.7508060385252574,-0.0012883938444236034,0.5602544949733987,0.005315554624687479,-0.11021182395770344,-0.23401733286977905,0.12305335468803266,-0.048076282281163264,0.027423889018039414,0.24940653493073756,0.001110645277938004,0.005796911227470747,0.7448400972361188,0.11255875529796375,0.4515579157009619,0.010854639077934962,-0.006655911556308636,0.07085897142214283,-0.04411571587861197],[0.0056776338105576805,0.18946233195320514,0.7040119051349941,-0.00657132843578375,1.3931486414276846,-0.016018776840686665,-1.234201290531581,0.35597831185718554,-0.011316767283667711,-0.09306206837417505,1.277300569413932,0.04574136094575306,-0.025132829422991693,-1.6452154266598804,-0.022066303505352484,-0.236945617565078,-0.0009742613135965182,-0.16299740163444013,0.32518211264991115,-1.1059937963975266,-1.034942038752863,-0.005776853709924394,0.03660377406327696,0.009388839967067433,-0.0058690441907271905,-1.4619439306583295,-0.10519412717369353,0.3249541428287392,-0.00024741594719161227,-0.00917840133035214,-0.2161557709241361,-0.1908849181506173],[-0.003979590074152398,0.38255012960050644,0.2351803261616064,-0.00730864052209611,0.5208692373366451,0.9009633808524806,-0.0839686559772163,0.44641212859936114,-0.08812562953739579,-0.019646643651799415,-0.6500279319459062,-0.052698140814775016,-0.0504211074032194,0.6947189043341324,-0.06776843993880205,0.03594492680668882,-0.023886392359823237,-0.16461593516791995,0.20944273355672655,0.9070522883568836,-0.39625462963920194,-0.003128128538327509,0.2256284036020571,-0.07258990315567557,-0.0076977294470819335,0.40191217339595864,-0.09731896046596798,-0.7765798977652896,-0.039192808557063946,-0.014916194104065333,-0.8718082820010092,0.020631338334606654],[-0.009630421694867466,-0.6444359363415019,-0.06541579522076967,-0.013528747385648243,-1.5002558889235496,-0.209927267879316,0.15029483000536445,-1.2463397413463997,-0.13717278431261754,0.7069179070839458,0.3843651801817164,-0.06866314671546012,-0.05658190762394227,0.7408752881302414,-0.02708940696687827,-0.2909570265671923,-0.009734648203006105,-0.054385926004288355,0.12886812263565878,-0.15582666451299332,1.481860355219226,-0.045786859003145226,-0.6007175551956976,-0.032638289091556597,-0.011272055613082988,-0.1397634728531855,-0.14397712891008063,-0.1910819619838869,-0.06535113878580935,-0.034344123005156435,-0.029749569165146806,-0.18191398337721507],[-0.0007063138916967927,-0.06068454365077918,0.005894014820964482,-0.005674689817689505,-0.3785933062369314,0.09184699921671398,-0.06208590143982597,-1.4958020900555957,-0.04956482348335347,-0.0215806218386768,1.0014900074759436,0.01980123729174482,-0.06884066021369377,-0.061879871659382545,-0.0277378470829717,-0.019543984079218403,0.030646715708717357,0.13557094051877044,0.3005355702178023,-0.19014831981053779,0.9153706909489623,-0.035107553191003484,-0.19389672242115333,0.004996981642846037,-0.001838901128342964,-0.032640409704853,0.04585740993332747,0.12891821102784323,-0.04059235885664265,-0.012680791913868802,0.33225282188114086,0.027771067803054543],[0.0008453161588893837,0.18453990630786127,0.16251859160367146,-0.0024228813484719115,0.8371234392440513,0.7628185437425284,0.35543857240834764,0.021312198190645868,-0.06892044599855861,-0.32675764014803454,-0.02931866824774922,-0.09031027797374813,0.03182795196359788,0.6437205095923282,-0.04603872004638497,-0.2018720930864495,0.02618039293218891,0.1355156295713047,0.1102776912691787,0.7894666709587687,-0.10777754176496246,-0.0032536685296158207,0.10123233895050791,-0.0205703633923883,-0.014778656094448329,-0.04924069922422738,0.006208914003755706,-0.614909868235334,-0.035672404686058354,0.0036779244421198142,-0.1975005006464774,-0.1681049274331367]],"b1":[-0.035977900411775045,0.15960840931696957,0.2588023688356987,-0.0013087185493200777,0.5182144568231525,-0.04918431958146122,-0.30968859161146217,0.7074362773732409,0.06509294527479562,-0.09438034058222639,-0.8271523531831737,-0.13926361522700992,-0.01893059030003701,-0.4152260456838855,-0.1620496169286247,0.20702972673366543,-0.12229188156158395,0.03967879477150467,-0.23065759002757202,-0.15217750972539473,-0.28575377726562645,-0.18253742140936877,0.20060474516254262,-0.02488669883842719,-0.06261847435682383,-0.021742060949993845,0.10528629480022729,0.20453156057372168,-0.11856610504545642,-0.08569860574447725,0.03395885615092859,0.22885975009730752],"W2":[[-0.023738222590143045,-0.005665699882886836,-0.0536844748587019,9.830992070112862e-84,0.028193333189177293,-0.020778066457256217,0.04160366532434519,0.002512992618793556,-0.0115623209576873,-1.2723739461747245e-06,-0.020247579815964287,-3.9176024319121883e-05,-0.019485299965955008,-0.00261430746437967,-2.8093049136748285e-06,-0.002216572911838963],[-0.13454479933950697,0.20435480218626456,-0.48256612063915855,9.253301793845697e-78,0.4945483521913653,0.28328270391938787,-0.24588435182706878,0.05310941223440159,0.0007587568057506186,-8.870514619690385e-18,0.12147471816924789,-0.06550279898345332,-0.027748370626448155,0.03548284454616122,0.018705208357926637,-0.14812984859041106],[-0.30351695085329233,-0.23624451533130136,-0.4581111743644681,6.584329167932944e-60,0.01341745766567058,0.22732302329202095,-0.17906918426802523,-0.7317769966270669,-0.08549061417595138,-1.6793916514387865e-07,0.3095571757356289,0.4582809973882678,0.504719768027116,-0.2239834999290116,0.23698842769237194,1.3435774072105524],[-0.0016670775148281336,-0.005834892873397128,0.014939126110411878,-7.323623799667539e-84,-0.017036075304812423,0.024938238823239273,-0.004102794358901769,-0.01083219933140948,-0.007067909692075752,-8.936781999635109e-45,-0.00672120029129092,0.01560275470129898,-0.0009819292422168595,-0.005526881256326641,-0.02266962604811589,0.024115676789884823],[-1.0364808758264517,0.23551585970947558,-0.36395213001380017,3.3247380569475142e-68,1.3422817669805198,0.09583575231034551,-0.1229299020149939,0.4548143508659948,0.13722415965235388,-1.2745543457440957e-08,0.6547339479933635,0.00904143004384254,-0.5509671553075474,-0.33591591735560505,-0.05398667471613457,-0.14453913408671498],[0.2698857647903828,0.7513636299776153,-0.22142288340501926,-9.748814188545734e-83,0.6595594909015656,0.42175608360587713,-0.5200749567406475,-0.12282298720273248,-0.4698074255090525,-2.2459636604886352e-14,-0.4573114721459664,-0.032399619126785385,-0.36611215257112845,0.2087705333184109,-0.09808745164726589,-0.06620215334786231],[0.6264373280452216,0.18811595610454754,-0.08029639154996013,2.781573062968106e-83,-0.6004017122339164,0.1062182249118888,0.26285508458559254,-0.1802951872441289,0.07506076767757516,-8.167666143403598e-21,-0.016444033486430257,-0.0575172366776178,0.37430955353790135,0.4211430711385418,-0.11733395086235525,-0.11061521908313525],[-0.25868682431777096,-0.2905290690175747,-1.3349229804445695,3.043398102683452e-30,0.2222077892612461,0.3702222100351971,-0.41535645986350495,0.4006512569909746,0.3909546199060642,-5.008006699126595e-06,1.4721715951045609,0.1993601276225401,-0.12604473467557634,-0.29438482060066373,0.18426376481681273,0.4731139014483111],[-0.10195364168084514,-0.08060736474179188,0.029155925937586466,1.3460960091153367e-83,-0.1387378621972196,0.2413877374310847,-0.018175332390301294,-0.09115069108134596,-0.008098593175004769,1.0329343097062006e-08,0.141933478603354,0.1602667254008643,-0.11404772099918395,-0.08310949278473725,-0.19688438149389026,0.2332184760414603],[-0.03265551146885576,-0.10516136255608652,0.41186708733803096,-1.8908711146141e-07,-0.06322921560998626,-0.32895182856260374,0.05507538831125987,1.104790960434354,0.0603389539015652,-0.001466495426263951,0.09097038348823935,-0.131167922728639,-0.1188615537700617,-0.07895392522400209,0.8033525064251418,-0.2027808641936848],[-0.6291186088655498,0.10615340786749784,0.9848397370607285,8.209454709902047e-71,0.5985607331704309,-0.07252096179910521,0.30166206128701506,-0.5006608899847936,-0.2797467928058277,-8.598952812833808e-15,-0.7214257223783315,0.11440972416441408,0.8315827515985742,-0.1914796765827745,0.4527586693309135,0.6090955147954403],[0.0973428466632589,0.016164642807893644,-0.00020807975534538385,5.559511640392003e-86,-0.03486915799899535,0.1357342621726482,-0.1143406953489091,-0.0008479767061941694,-0.10870124304072139,-8.77209864509617e-09,-0.11535534760280489,0.0018400449427798597,0.03178339587711652,-0.004803256079147861,-0.01214831883418822,-0.001137701513543701],[-0.03387548224667642,-0.03051912737552301,-0.006107931662356746,-7.595859134126931e-10,0.0019602254453462416,0.004352443942728159,0.03271926233068487,0.09308359467120834,0.005707371736040073,-1.5541961073087414e-08,0.10777345436207608,-0.024258626792673273,0.18673228028421313,-0.03647997215002993,0.047094741656104326,-0.033178894734028366],[1.138939143782049,0.22858138057233812,0.7528678530893189,-1.8780245784859467e-82,-0.32115066936327735,0.3852575870416782,-0.6544230778070338,0.23421387579115024,-0.6364881516455145,-3.831101641485403e-14,-0.8051245039193633,-0.037454008710828185,0.2612493175849154,0.20084992573055307,0.10463155356340845,-0.13972493646990036],[0.15614017089842447,0.0036273163450948067,-0.16760650116592019,-1.0743837457825316e-84,-0.24321684208570174,0.09752513129949354,-0.09100425901387123,-0.09063042397566384,-0.08273934596849514,8.726106765727587e-44,-0.08914595632678866,0.04691551024310339,0.027308579560480477,0.07580056025693592,-0.053372845388733575,0.06742438187309398],[-0.15761783510107014,-0.1599711082148083,-0.09376530747725256,-6.375514726582968e-83,0.02847674043105525,0.5159168756290918,-0.11469106258752935,0.1057779800592113,0.08167601338731126,-1.3707446630954387e-08,0.1086098167188655,-0.02017416584819155,0.5304677439557827,-0.21952654243795777,-0.04115673375503889,-0.07766338636242454],[0.15295138031164693,0.23832371646417835,0.04606823164998225,-6.426378691356792e-83,0.03898099362359545,0.012757840326260893,0.16497153712394635,-0.006583730891473807,-0.05669257222113605,-2.1530004750069645e-09,-0.11252993317943111,-0.002825076026757195,-0.05341345725906625,0.11516156548562628,-0.015318645372507444,-0.025101672346122223],[0.10865654225064926,0.27946282470831574,0.00690396974760582,-1.1557584805773269e-83,0.1349198026064478,0.05394668172537634,0.27822911408596346,-0.04513144190461521,0.08607431044313482,-4.113455052605676e-44,0.028075360051654286,-0.03640651703321794,0.05620507919401153,0.29076379237384553,-0.05201570526463526,-0.09350037355851692],[-0.08301660817235311,0.24060703223189284,0.06873915084049442,-1.9628456686940906e-80,0.34077861978609353,0.04562023895698824,0.031078148974936756,-0.057459829031684805,-0.13065434205103027,-5.912421067722223e-26,-0.2534098417869827,-0.0072354615387203725,-0.21305737922559165,0.09201838925887139,-0.036458062896219924,-0.04931953185377345],[0.7742880865060806,0.24913995670518205,-0.05376842602364935,1.9723281250452948e-84,-0.22621599320869412,0.6509306335923071,-0.48515639031889424,-0.16098982508643517,-0.39435756572248426,-2.426369657760824e-18,-0.5344290521825779,-0.04410443707492236,0.5464514459688202,0.1963994996035796,-0.11933232598263523,-0.09508663734389579],[0.4531268210896541,0.026529471673397847,1.4525873336074708,-1.0138334951439779e-25,-0.9028495689580003,0.14830196204383952,0.4910223930594026,0.042753880713228345,-0.23444600795173973,-8.879197243656718e-12,-0.9367663582515313,-0.02412822101500499,0.7524165538239378,0.176988976734779,-0.04913426070429434,-0.10172976940450354],[0.11310596990389223,0.07459425085801459,-0.04238557240610317,-2.615564426255698e-84,-0.03884612508919257,0.04674801830233078,-0.2201424239170085,-0.00869829934815355,-0.012889167578261378,-2.7221572750187985e-20,-0.042150685925727,0.037659075658506305,-0.06039046702167449,0.03136246865287966,-0.040768045433297234,0.03323460113220441],[-0.2041570664837834,0.08363157389283506,-0.08253419352012553,-8.63698796316226e-48,0.4655084849112541,0.2067941386912093,-0.07670111191578989,0.13514150385211585,-0.02045381464467337,-2.1353148873863143e-13,-0.04059598153693994,-0.1003550001654582,0.23896970670618375,-0.041650623981221865,0.06929857040819569,-0.18648659429920392],[-0.05392638096313873,-0.007696235619879114,0.04319487221266075,-1.5560927918040841e-86,-0.010395554915188936,0.0026715290370834073,0.08994783082463062,-0.0011977461629498437,0.021077927468572382,-4.828034427410556e-34,0.04969057615873009,0.003205061255530831,-0.029359400162459685,0.0057284164020002856,-0.007642855722617724,0.007189842533232247],[-0.003230095841257626,-0.0004310082627003181,-0.12068543563006615,8.135164099119015e-84,0.021974378998651463,-0.022842721643889105,-0.0014789132264087193,0.0035936462083042886,-6.877506383948661e-06,-0.00025477617407532156,0.030533802047215453,0.0007157283376018627,-0.019601852730162142,-0.0005748941300781488,-0.0003297478596876074,0.0002863558448926164],[0.77457340009931,0.044425931156100926,-0.04632109210841315,-7.805642593786742e-84,-0.7426909077240675,0.7125229800513471,-0.09392893190922172,-0.15405880547763376,0.01843112117537443,-6.630175473110474e-09,-0.3435127088714898,-0.1596121150774091,1.2248821802293228,0.17627701123810174,-0.12528700194556697,-0.31765326702294544],[-0.09835615678845412,0.09551479866452402,0.011601073831446847,-3.627309833708526e-83,0.21865568250849257,0.06524265763664386,0.16827957347392444,0.04921712930303228,0.08821081126814329,-6.235350523175924e-24,0.022982689967693776,-0.06736357082809968,0.1447672810404115,0.08522803311016337,0.03668680413968577,-0.12285637242228581],[-0.5251586569761979,-0.18449086056568376,-0.13493288078209756,3.672615099424043e-83,0.19165448890732317,-0.11173334825516143,0.5365908527046815,0.23179150356396294,0.5046925598747913,-1.9966363695798216e-09,0.6055867497375366,-0.051937564634284006,0.049913864307622256,-0.0849836875123373,0.07813546835815197,-0.13091892014522433],[0.02677707469568381,-0.0011686984051569567,-0.08161470670354876,-3.908507430932126e-89,-0.035120888102726434,0.0191683127685697,-0.03332516623324805,0.0009206313555904866,-0.01858125567965489,2.3734789220170836e-44,0.062394865360450184,0.03333880661985883,-0.06502140086671715,-0.0018924810809779942,-0.03222887597150041,0.05028110319320858],[-0.0033896962879418065,-0.0005616041273831649,0.01584076308464186,4.608558848446906e-82,-0.016716007412127816,0.011914031778462073,0.003551317255103613,-0.008698925089359303,-0.0032887474194796896,-1.5278437196448033e-10,0.007853810111254616,0.016047066174259723,-0.03627058729029668,-0.00030341893917933897,-0.017556432188912726,0.024017450984150417],[0.0942832775555442,0.24160074590253483,-0.18872012404300478,4.612515166802536e-83,-0.3195737319290806,-0.262703680508702,0.709098555627447,-0.11944218908589194,0.4825780871186248,-6.447250935448115e-08,0.4705234663626097,-0.11237393414057968,0.09678424442060164,0.6059935259854426,-0.024542246361876796,-0.22299974188798058],[-0.01508487947956099,-0.1322528018925702,-0.09213650056454191,-1.2305730893722958e-83,-0.5845690299835771,0.598239418327672,0.04011864592384995,-0.21228371213385935,0.14746386843955175,1.3394928650762142e-06,0.36803554885183665,0.24012993531615853,0.23656362952921933,-0.15021765966709733,-0.3901821455628663,0.29998774353435587]],"b2":[-0.22212637708496688,0.09024991063663884,-0.23110570969854244,-2.9356485368465585e-17,0.18031015808274475,0.03569230758766099,-0.0013665094080691264,0.36420728821239495,0.24252503951883675,-1.2605722932230988e-05,0.5871525211624729,-0.038935676008102556,0.05150181788897831,0.002444822768893037,0.23135802311809417,-0.04401377539276918],"W3":[[1.6602652474698676,0.3074027920523234,-0.06970027335527787,-0.3605983283225884,-0.07873454079118235,-0.2190118680908666,-1.037649158911939,-0.2642774366152477],[0.6152377147568697,-0.2097415648599096,-0.19447452506879284,0.09055444250518489,-0.22800878647634754,-0.1967041530326922,0.6293978199214756,-0.5401063886751891],[-0.25713074760725463,1.7756411738472049,-0.054859654402432935,-0.10310840945118045,-0.1952590676621684,-1.1861088512421294,0.03698347353912886,-0.11006890010407723],[-1.7447894955448084e-84,1.4576048569066399e-05,-1.6777925315009146e-82,-9.635603006295163e-83,-8.25935392079798e-82,-1.412987181318198e-05,4.626346630676879e-83,-9.817867461452664e-83],[-1.250247095063452,-0.17395994031007697,-0.23382016053436988,-0.15123915889250508,0.229794169086839,0.5540678213656562,1.5110238385583699,-0.4460559322696535],[0.5267059521766356,-0.13847308199712566,0.33538126118724637,-0.7821363981067019,-0.39284694389828106,-0.581688159567863,0.3178471909099006,0.8335741805601058],[-0.5966969659149951,0.25709442515979597,-0.1535295168064211,1.2004433086416542,-0.13718947560315764,-0.42640476129412946,-0.05050697820878289,-0.1409121810534058],[-0.34625724915879436,0.8117604481552188,-0.4027746292421844,-0.2965395371014849,-0.6032756747807555,1.160729523423944,-0.26164988591148913,-0.12605605026637018],[-0.6635086102299232,-0.2785302583329157,0.025482877273132837,0.7086009641076314,-0.23330305940984833,0.37020801631280514,-0.09031630170995791,0.2163363455101902],[-3.2098733406174806e-19,-0.039262030059462064,0.00047427687717373966,-8.218189869420865e-45,3.238347653415836e-06,0.03393185970499184,-6.771605063788256e-29,-0.0008727568960424162],[-0.9903738509735464,-1.2498799738110142,0.7712186698117757,0.5192758684332099,-0.2794466408884665,1.2983485154416707,-0.2865631354840073,0.2049410972163076],[-0.025696619292328634,-0.1510038510815144,0.4494890605992621,-0.024557176823284847,0.27270335879832147,-0.29046354513697786,-0.023974326414305053,-0.19147050968263926],[0.288082540864341,0.13446015067751554,-0.5757286884169873,-0.16770742627179136,0.6340381262345329,-1.0934810958027592,-0.567820362338679,1.248693851268249],[0.7667730566946156,-0.12491712062960074,-0.17187828445224573,0.5736385711000548,-0.15251089468694543,-0.19529964539783448,-0.16995748921726067,-0.3527796489645161],[-0.19326380347255287,0.4666420604205258,-0.5339939482008136,-0.21603620718764033,0.6930867229296784,0.5402133745718722,-0.23277850490096896,-0.296186331957981],[-0.08080734302658214,-0.5150291278263334,0.7592492813342345,-0.08406185883994546,1.169134218996801,-0.5765025842903765,-0.11871464114738373,-0.5009848159611023]],"b3":[-0.10288405974467218,-0.016902599266818485,-0.1305366281905236,0.020275238150808592,-0.02194004353033354,0.24614567612043048,0.0500504419981443,-0.018846867196548364]},"styles":[{"id":"minimal","name":"Минимализм","summary":"Чистые линии, простор и спокойная палитра.","palette":["#f5f3fb","#c9c9d6","#7a6df0","#14162c"],"clothing":["Однотонная база","Прямой крой","Один акцентный предмет","Простая обувь без деталей"],"hobbies":["Дизайн интерьеров","Графический дизайн","Фотография предметки"],"directions":["design","3d"]},{"id":"street","name":"Стрит-стайл","summary":"Крупный крой, городская фактура, уверенный контраст.","palette":["#12142c","#3a8bef","#e0567c","#f5f3fb"],"clothing":["Оверсайз худи","Карго-брюки","Кроссовки","Бейсболка"],"hobbies":["Стрит-арт","Скейт-фотография","Дизайн принтов"],"directions":["fashion","media"]},{"id":"retro","name":"Ретро / Винтаж","summary":"Тёплые приглушённые тона и налёт старой плёнки.","palette":["#dc9a2e","#8a5a3a","#f0e0c0","#4a3527"],"clothing":["Вельвет","Высокая талия","Платок или шарф","Круглые очки"],"hobbies":["Плёночная фотография","Иллюстрация","Керамика"],"directions":["craft","media"]},{"id":"romantic","name":"Романтика / Пастель","summary":"Мягкий свет, воздушные пастельные оттенки.","palette":["#fce6ec","#e2dcfc","#efebfe","#c98aa0"],"clothing":["Струящиеся ткани","Пастельные тона","Мелкие аксессуары","Балетки"],"hobbies":["Иллюстрация","Флористика","Леттеринг"],"directions":["craft","text"]},{"id":"grunge","name":"Панк / Гранж","summary":"Резкий контраст, потёртая фактура, характер.","palette":["#0c0d20","#8f83ff","#e0567c","#9598b8"],"clothing":["Косуха","Рваный деним","Массивная обувь","Металлическая фурнитура"],"hobbies":["Музыка и биты","Коллаж","Тату-эскизы"],"directions":["media","text"]},{"id":"avant","name":"Авангард / Эксперимент","summary":"Смелые формы, насыщенный цвет, нестандартная композиция.","palette":["#7a6df0","#dc9a2e","#26a677","#e0567c"],"clothing":["Асимметричный крой","Смешение фактур","Необычные силуэты","Скульптурные аксессуары"],"hobbies":["3D-моделирование","Digital-арт","Экспериментальная мода"],"directions":["3d","fashion"]},{"id":"classic","name":"Классика / Элегантность","summary":"Сбалансированные пропорции и сдержанная палитра.","palette":["#14162c","#63678a","#e7e5f3","#7a6df0"],"clothing":["Пиджак прямого кроя","Нейтральные тона","Лаконичные аксессуары","Классическая обувь"],"hobbies":["Портретная фотография","Каллиграфия","Дизайн одежды"],"directions":["fashion","design"]},{"id":"popart","name":"Поп-арт / Яркий","summary":"Максимум цвета, смелые контрасты, энергия.","palette":["#e0567c","#3a8bef","#f6c667","#26a677"],"clothing":["Яркие цветовые блоки","Принты","Контрастные сочетания","Акцентные украшения"],"hobbies":["Иллюстрация","Анимация","Дизайн мерча"],"directions":["design","media"]}]}
+</script>
+<div id="toast" class="toast"><svg class="icon" id="toastIcon"><use href="#i-check"/></svg><span id="toastText"></span></div>
+
+<script>
+/* ---------------- persistent "database" (localStorage) ---------------- */
+const DB_KEY = 'freimelet_users_v1';
+const SESSION_KEY = 'freimelet_session_v1';
+function loadUsers(){ try{ return JSON.parse(localStorage.getItem(DB_KEY)) || []; }catch(e){ return []; } }
+function saveUsers(list){ try{ localStorage.setItem(DB_KEY, JSON.stringify(list)); }catch(e){} }
+function obfuscate(str){ try{ return btoa(unescape(encodeURIComponent(str))); }catch(e){ return str; } }
+function updateCurrentUser(patch){
+  if(!state.user) return;
+  Object.assign(state.user, patch);
+  const users = loadUsers();
+  const idx = users.findIndex(u=>u.id===state.user.id);
+  if(idx>-1){ users[idx]=state.user; saveUsers(users); }
+}
+
+/* ---------------- state ---------------- */
+const state = { role:'school', consent:'pending', user:null, pendingAge:null };
+const directions = [
+  {id:'design',name:'Дизайн и графика',icon:'i-pen'},
+  {id:'3d',name:'3D и цифровое творчество',icon:'i-cube'},
+  {id:'fashion',name:'Fashion и предметы',icon:'i-shirt'},
+  {id:'craft',name:'Ремесло',icon:'i-package'},
+  {id:'media',name:'Медиа',icon:'i-camera'},
+  {id:'text',name:'Тексты и музыка',icon:'i-music'}
+];
+const roleNotices = {
+  school:'После регистрации родителю нужно будет подтвердить участие в течение <b>3 дней</b> — по ссылке или в своём кабинете. До подтверждения доступен только просмотр, без публикации и продажи.',
+  student:'Если тебе есть 18 — аккаунт активируется сразу. Если нет — как и для школьников, потребуется согласие родителя.',
+  parent:'Вы подтверждаете участие ребёнка в своём кабинете и в любой момент видите его активность или можете отозвать согласие.',
+  partner:'Полномочия представителя организации проверяются модератором. Регистрация для найма откроется в течение <b>3 дней</b> после проверки.'
+};
+
+/* ---------------- direction picker ---------------- */
+const dirPick = document.getElementById('dirPick');
+directions.forEach(d=>{
+  const b=document.createElement('button');
+  b.className='dir-opt'; b.dataset.id=d.id; b.style.setProperty('--accent','var(--lav-deep)'); b.type='button';
+  b.innerHTML=`<svg class="icon"><use href="#${d.icon}"/></svg>${d.name}`;
+  b.onclick=()=>b.classList.toggle('on');
+  dirPick.appendChild(b);
+});
+
+/* ---------------- auth tabs ---------------- */
+function switchAuthTab(tab){
+  document.getElementById('authTabRegister').classList.toggle('on', tab==='register');
+  document.getElementById('authTabLogin').classList.toggle('on', tab==='login');
+  document.getElementById('stepLogin').classList.toggle('hide', tab!=='login');
+  document.getElementById('stepRole').classList.toggle('hide', tab!=='register');
+  document.getElementById('stepRegister').classList.add('hide');
+  document.getElementById('stepDirections').classList.add('hide');
+}
+
+/* ---------------- registration / role flow ---------------- */
+function selectRole(el){
+  document.querySelectorAll('.role').forEach(x=>x.classList.remove('sel'));
+  el.classList.add('sel');
+  state.role = el.dataset.role;
+  document.getElementById('roleNotice').innerHTML = `<svg class="icon"><use href="#i-shield"/></svg><div>${roleNotices[state.role]}</div>`;
+}
+function goToRegisterStep(){
+  document.getElementById('stepRole').classList.add('hide');
+  document.getElementById('stepRegister').classList.remove('hide');
+  const titles = {school:'Регистрация школьника', student:'Регистрация студента', parent:'Регистрация родителя', partner:'Регистрация партнёра'};
+  document.getElementById('registerTitle').textContent = titles[state.role] || 'Регистрация';
+  document.getElementById('minorBlock').classList.add('hide');
+}
+function backToRoleStep(){
+  document.getElementById('stepRegister').classList.add('hide');
+  document.getElementById('stepRole').classList.remove('hide');
+}
+function calcAge(dobStr){
+  const dob = new Date(dobStr);
+  if(isNaN(dob.getTime())) return null;
+  const now = new Date();
+  let age = now.getFullYear() - dob.getFullYear();
+  const m = now.getMonth() - dob.getMonth();
+  if(m<0 || (m===0 && now.getDate()<dob.getDate())) age--;
+  return age;
+}
+function onDobChange(){
+  const dob = document.getElementById('regDob').value;
+  const age = calcAge(dob);
+  state.pendingAge = age;
+  const showMinor = age!==null && age<18 && (state.role==='school'||state.role==='student');
+  document.getElementById('minorBlock').classList.toggle('hide', !showMinor);
+}
+function downloadConsentForm(){
+  const fio = document.getElementById('regFio').value.trim() || '____________________';
+  const text =
+`СОГЛАСИЕ РОДИТЕЛЯ (ЗАКОННОГО ПРЕДСТАВИТЕЛЯ)
+на участие несовершеннолетнего в платформе «Фреймлёт»
+
+Я, ______________________________________________ (ФИО родителя/законного представителя),
+подтверждаю согласие на участие несовершеннолетнего(ей)
+${fio}
+в творческой платформе «Фреймлёт» (публикация работ, участие в челленджах,
+маркетплейс изделий, отклики на стажировки) и на обработку связанных с этим
+персональных данных в соответствии с политикой платформы.
+
+Дата: ______________        Подпись: ______________________
+
+Бланк сформирован автоматически. Загрузите подписанный документ в личном
+кабинете родителя, либо подтвердите участие напрямую в своём аккаунте.`;
+  const blob = new Blob([text], {type:'text/plain;charset=utf-8'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = 'soglasie-freimelet.txt';
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(()=>URL.revokeObjectURL(url), 2000);
+  toast('Бланк согласия скачан','i-download');
+}
+function showRegError(msg){
+  const el = document.getElementById('regError');
+  el.textContent = msg; el.classList.remove('hide');
+}
+function submitRegister(){
+  const fio = document.getElementById('regFio').value.trim();
+  const dob = document.getElementById('regDob').value;
+  const city = document.getElementById('regCity').value.trim();
+  const email = document.getElementById('regEmail').value.trim().toLowerCase();
+  const pass = document.getElementById('regPass').value;
+  const pass2 = document.getElementById('regPass2').value;
+  const agree = document.getElementById('regAgreeData').checked;
+  document.getElementById('regError').classList.add('hide');
+
+  if(!fio || !dob || !city || !email || !pass){ showRegError('Заполни все поля формы.'); return; }
+  if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)){ showRegError('Проверь формат email.'); return; }
+  if(pass.length<4){ showRegError('Пароль должен быть не короче 4 символов.'); return; }
+  if(pass!==pass2){ showRegError('Пароли не совпадают.'); return; }
+  if(!agree){ showRegError('Нужно согласие на обработку персональных данных.'); return; }
+
+  const users = loadUsers();
+  if(users.some(u=>u.email===email)){ showRegError('Аккаунт с таким email уже существует. Попробуй войти.'); return; }
+
+  const age = calcAge(dob);
+  const isMinor = age!==null && age<18 && (state.role==='school'||state.role==='student');
+  const user = {
+    id: 'u_'+Date.now().toString(36)+Math.random().toString(36).slice(2,7),
+    fio, dob, age, city, email,
+    passHash: obfuscate(pass),
+    role: state.role,
+    directions: [],
+    consent: state.role==='partner' ? 'pending' : (isMinor ? 'pending' : 'confirmed'),
+    points: 0,
+    createdAt: Date.now()
+  };
+  users.push(user);
+  saveUsers(users);
+  localStorage.setItem(SESSION_KEY, user.id);
+  state.user = user; state.consent = user.consent;
+  applyUserToUI(user);
+
+  if(state.role==='partner'){ show('partnerGate'); toast('Регистрация отправлена на проверку','i-briefcase'); return; }
+  if(state.role==='parent'){ show('parentApp'); toast('Добро пожаловать в кабинет родителя','i-check'); return; }
+  document.getElementById('stepRegister').classList.add('hide');
+  document.getElementById('stepDirections').classList.remove('hide');
+}
+function finishOnboarding(){
+  const chosen = [...document.querySelectorAll('#dirPick .dir-opt.on')].map(b=>b.dataset.id);
+  updateCurrentUser({directions: chosen});
+  applyUserToUI(state.user);
+  document.getElementById('loginScreen').classList.add('hide');
+  document.getElementById('app').classList.remove('hide');
+  document.getElementById('app').style.display='grid';
+  syncConsentUI();
+  toast('Добро пожаловать! Профиль создан.','i-check');
+}
+function submitLogin(){
+  const email = document.getElementById('loginEmail').value.trim().toLowerCase();
+  const pass = document.getElementById('loginPass').value;
+  const err = document.getElementById('loginError');
+  err.classList.add('hide');
+  const users = loadUsers();
+  const user = users.find(u=>u.email===email && u.passHash===obfuscate(pass));
+  if(!user){ err.textContent='Неверный email или пароль.'; err.classList.remove('hide'); return; }
+  localStorage.setItem(SESSION_KEY, user.id);
+  routeUserToApp(user);
+}
+function applyUserToUI(user){
+  const initial = (user.fio||'?').trim().charAt(0).toUpperCase() || '?';
+  const first = (user.fio||'').split(' ')[0] || 'Профиль';
+  const dirNames = (user.directions||[]).map(id=>(directions.find(d=>d.id===id)||{}).name).filter(Boolean);
+  ['topAvatar','profAvatar'].forEach(id=>{ const el=document.getElementById(id); if(el) el.textContent=initial; });
+  const topName = document.getElementById('topNameBlock');
+  if(topName){ topName.innerHTML = `${first}<small id="topNameSub">${user.age?user.age+' лет':''}${dirNames.length?' · '+dirNames[0]:''}</small>`; }
+  const profName = document.getElementById('profName');
+  if(profName) profName.textContent = `${first}${user.age?', '+user.age:''}`;
+  const profMeta = document.getElementById('profMeta');
+  if(profMeta) profMeta.textContent = `${user.city||''}${dirNames.length?' · '+dirNames.join(' / '):''}`;
+}
+function routeUserToApp(user){
+  state.user = user; state.role = user.role; state.consent = user.consent;
+  applyUserToUI(user);
+  if(user.role==='partner'){ show('partnerGate'); return; }
+  if(user.role==='parent'){ show('parentApp'); return; }
+  document.getElementById('loginScreen').classList.add('hide');
+  document.getElementById('app').classList.remove('hide');
+  document.getElementById('app').style.display='grid';
+  syncConsentUI();
+}
+function show(id){
+  ['loginScreen','partnerGate','parentApp','partnerApp','app'].forEach(x=>document.getElementById(x).classList.add('hide'));
+  document.getElementById(id).classList.remove('hide');
+  if(id==='app'){document.getElementById('app').style.display='grid';}
+}
+function enterPartnerDemo(){ show('partnerApp'); toast('Кабинет партнёра открыт','i-briefcase'); }
+function backToLogin(){
+  localStorage.removeItem(SESSION_KEY);
+  state.user = null;
+  document.getElementById('app').style.display='none';
+  show('loginScreen');
+  switchAuthTab('register');
+  document.getElementById('stepRole').classList.remove('hide');
+  document.getElementById('stepRegister').classList.add('hide');
+  document.getElementById('stepDirections').classList.add('hide');
+}
+
+/* ---------------- view switching ---------------- */
+const allNavButtons=[...document.querySelectorAll('[data-view]')];
+function go(view){
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+  document.getElementById(view).classList.add('active');
+  allNavButtons.forEach(b=>b.classList.toggle('active', b.dataset.view===view));
+  document.querySelector('.content')?.scrollTo({top:0,behavior:'smooth'});
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+allNavButtons.forEach(b=>b.addEventListener('click',()=>go(b.dataset.view)));
+function sheetGo(v){ closeSheet(); go(v); }
+
+/* ---------------- mobile sheet ---------------- */
+function openSheet(){document.getElementById('sheetOverlay').classList.add('open')}
+function closeSheet(){ document.getElementById('sheetOverlay').classList.remove('open') }
+
+/* ---------------- consent ---------------- */
+function syncConsentUI(){
+  const pending = state.consent==='pending';
+  document.getElementById('sideStatusBadge').className = 'badge ' + (pending?'warning':'success');
+  document.getElementById('sideStatusBadge').textContent = pending?'Ожидается согласие родителя':'Согласие подтверждено';
+  document.getElementById('sideStatusText').textContent = pending?'Пока публикация и продажа недоступны.':'Полный доступ открыт: публикация, продажа, стажировки.';
+  const cCard=document.getElementById('consentCard');
+  if(cCard){
+    cCard.className = pending? 'notice warn' : 'notice';
+    cCard.innerHTML = pending
+      ? '<svg class="icon"><use href="#i-clock"/></svg><div><b>Согласие родителя: ожидается</b><br>Родитель подтверждает участие в своём кабинете. <a href="#" onclick="toggleConsentDemo(event)" style="color:var(--lav-deep);font-weight:700">Подтвердить сейчас →</a></div>'
+      : '<svg class="icon"><use href="#i-check"/></svg><div><b>Согласие родителя получено</b><br>Публикация, продажа и стажировки доступны в полном объёме.</div>';
+  }
+  const intern=document.getElementById('internContent');
+  if(intern){
+    intern.innerHTML = pending
+      ? '<div class="lock-wrap"><div class="lock-icon"><svg class="icon" style="width:26px;height:26px"><use href="#i-clock"/></svg></div><h3 style="margin:0">Доступно после согласия родителя</h3><p class="muted" style="max-width:380px;margin:0">Как только родитель подтвердит участие в своём кабинете, здесь появятся вакансии от проверенных партнёров.</p></div>'
+      : '<div class="notice"><svg class="icon"><use href="#i-shield"/></svg><div>Отклики открыты. Все партнёры проходят верификацию, каждая стажировка — модерацию.</div></div><div class="grid cols-3" style="margin-top:18px"><div class="card intern-card"><span class="badge">Удалённо</span><h3 style="margin:2px 0;font-size:15px">Контент-дизайн</h3><p class="muted" style="font-size:12.5px;margin:0">Визуалы для цифрового продукта · 4 недели</p><div class="row"><b style="color:var(--lav-deep)">+300 баллов</b><button class="btn ghost sm" onclick="applyIntern()">Откликнуться</button></div></div><div class="card intern-card"><span class="badge">Казань</span><h3 style="margin:2px 0;font-size:15px">Мастерская аксессуаров</h3><p class="muted" style="font-size:12.5px;margin:0">Разработка и подготовка коллекции</p><div class="row"><b style="color:var(--lav-deep)">+300 баллов</b><button class="btn ghost sm" onclick="applyIntern()">Откликнуться</button></div></div><div class="card intern-card"><span class="badge">Москва</span><h3 style="margin:2px 0;font-size:15px">Медиа-лаборатория</h3><p class="muted" style="font-size:12.5px;margin:0">Фото, видео и сторителлинг</p><div class="row"><b style="color:var(--lav-deep)">+300 баллов</b><button class="btn ghost sm" onclick="applyIntern()">Откликнуться</button></div></div></div>';
+  }
+}
+function toggleConsentDemo(e){ e.preventDefault(); state.consent = state.consent==='pending'?'confirmed':'pending'; updateCurrentUser({consent: state.consent}); syncConsentUI(); toast(state.consent==='confirmed'?'Согласие подтверждено':'Согласие снова ожидается','i-check'); }
+function toggleConsent(el){ const on = !el.classList.contains('on'); el.classList.toggle('on', on); const badge=document.getElementById('parentStatusBadge'); state.consent = on?'confirmed':'pending'; updateCurrentUser({consent: state.consent}); badge.className='badge '+(on?'success':'warning'); badge.textContent= on?'Согласие дано':'Ожидает согласия'; toast(on?'Согласие подтверждено':'Согласие отозвано','i-check'); }
+
+/* ---------------- gated actions ---------------- */
+function needConsent(){ if(state.consent==='pending'){ toast('Нужно согласие родителя, чтобы продолжить','i-clock'); return true; } return false; }
+function openUpload(){ if(needConsent())return; document.getElementById('modal').classList.add('open'); }
+function openMarket(){ if(needConsent())return; document.getElementById('marketModal').classList.add('open'); }
+function closeModal(id){ document.getElementById(id).classList.remove('open'); }
+function submitUpload(){ closeModal('modal'); toast('Работа отправлена на модерацию','i-check'); }
+function submitMarket(){ closeModal('marketModal'); toast('Изделие отправлено на модерацию','i-check'); }
+function participate(){ toast('Челлендж добавлен в твой план','i-target'); }
+function applyIntern(){ if(needConsent())return; toast('Отклик отправлен партнёру','i-briefcase'); }
+function openPosting(){ toast('Форма создания стажировки','i-plus'); }
+
+/* ---------------- misc ui ---------------- */
+function filterChip(el){ document.querySelectorAll('.filters .chip').forEach(c=>c.classList.remove('on')); el.classList.add('on'); }
+function tabClick(el){ el.parentElement.querySelectorAll('button').forEach(b=>b.classList.remove('on')); el.classList.add('on'); }
+let toastTimer;
+function toast(msg,icon){
+  const t=document.getElementById('toast');
+  document.getElementById('toastText').textContent=msg;
+  document.getElementById('toastIcon').innerHTML=`<use href="#${icon||'i-check'}"/>`;
+  t.classList.add('show');
+  clearTimeout(toastTimer); toastTimer=setTimeout(()=>t.classList.remove('show'),2600);
+}
+
+/* ================= ЛЕНТА ТВОРЧЕСТВА (видео из соцсетей) ================= */
+/* Формат записи: {title, author, dir, plat:'YouTube'|'VK', type:'embed'|'link', id? , url} */
+const VIDEO_FEED = [
+  {title:'Вдохновение и творческие истории', author:'Adobe Creative Cloud', dir:'design', plat:'YouTube', type:'embed', id:'8xZWuwxSYhY'},
+  {title:'Подборка: таймлапсы иллюстрации', author:'YouTube · подборка', dir:'design', plat:'YouTube', type:'link', url:'https://www.youtube.com/results?search_query=иллюстрация+таймлапс+процесс+рисования'},
+  {title:'3D-моделирование с нуля', author:'YouTube · подборка', dir:'3d', plat:'YouTube', type:'link', url:'https://www.youtube.com/results?search_query=3d+моделирование+процесс+blender'},
+  {title:'DIY-апсайклинг и переделка одежды', author:'YouTube · подборка', dir:'fashion', plat:'YouTube', type:'link', url:'https://www.youtube.com/results?search_query=diy+апсайклинг+одежды+переделка'},
+  {title:'Фэшн-иллюстрация и эскизы образов', author:'VK Видео · подборка', dir:'fashion', plat:'VK', type:'link', url:'https://vk.com/video/search?q=fashion%20иллюстрация%20эскиз'},
+  {title:'Керамика и гончарное ремесло', author:'YouTube · подборка', dir:'craft', plat:'YouTube', type:'link', url:'https://www.youtube.com/results?search_query=керамика+гончарное+дело+процесс'},
+  {title:'Хендмейд-украшения своими руками', author:'VK Видео · подборка', dir:'craft', plat:'VK', type:'link', url:'https://vk.com/video/search?q=хендмейд%20украшения%20своими%20руками'},
+  {title:'Съёмка и монтаж коротких роликов', author:'YouTube · подборка', dir:'media', plat:'YouTube', type:'link', url:'https://www.youtube.com/results?search_query=монтаж+коротких+видео+для+начинающих'},
+  {title:'Битмейкинг и создание своей музыки', author:'YouTube · подборка', dir:'text', plat:'YouTube', type:'link', url:'https://www.youtube.com/results?search_query=битмейкинг+создание+музыки+для+начинающих'},
+];
+const VIDEO_FILTERS = [
+  {id:'all', name:'Все'}, {id:'design', name:'Дизайн'}, {id:'3d', name:'3D'},
+  {id:'fashion', name:'Fashion'}, {id:'craft', name:'Ремесло'}, {id:'media', name:'Медиа'}, {id:'text', name:'Музыка и тексты'}
+];
+let activeVideoFilter = 'all';
+function renderVideoFilters(){
+  const wrap = document.getElementById('vidFilters');
+  wrap.innerHTML = VIDEO_FILTERS.map((f,i)=>`<button class="chip${f.id==='all'?' on':''}" data-vf="${f.id}">${f.name}</button>`).join('');
+  wrap.querySelectorAll('button').forEach(btn=>{
+    btn.onclick = ()=>{ wrap.querySelectorAll('button').forEach(b=>b.classList.remove('on')); btn.classList.add('on'); activeVideoFilter = btn.dataset.vf; renderVideoGrid(); };
+  });
+}
+function renderVideoGrid(){
+  const grid = document.getElementById('vidGrid');
+  const items = VIDEO_FEED.filter(v=>activeVideoFilter==='all' || v.dir===activeVideoFilter);
+  grid.innerHTML = items.map((v,i)=>{
+    const thumb = v.type==='embed'
+      ? `<div class="vid-thumb" onclick="playVideo(this,'${v.id}')"><span class="vid-plat">${v.plat}</span><div class="vid-play-btn"><svg class="icon" style="width:22px;height:22px"><use href="#i-play"/></svg></div></div>`
+      : `<a class="vid-thumb" href="${v.url}" target="_blank" rel="noopener"><span class="vid-plat">${v.plat}</span><div class="vid-play-btn"><svg class="icon" style="width:22px;height:22px"><use href="#i-play"/></svg></div></a>`;
+    return `<div class="card vid-card">${thumb}<div class="vid-body"><b>${v.title}</b><span class="muted">${v.author}</span></div></div>`;
+  }).join('') || '<p class="muted">Пока нет видео в этом направлении.</p>';
+}
+function playVideo(el,id){
+  el.innerHTML = `<iframe src="https://www.youtube.com/embed/${id}?autoplay=1" title="video" allow="autoplay; encrypted-media" allowfullscreen></iframe>`;
+  el.onclick = null;
+}
+
+/* ================= AI-СТИЛИСТ: нейросеть, обученная с нуля ================= */
+const AI_MODEL = JSON.parse(document.getElementById('aiModelData').textContent);
+
+function relu(v){ return v.map(x=>x>0?x:0); }
+function softmax(v){ const m=Math.max(...v); const ex=v.map(x=>Math.exp(x-m)); const s=ex.reduce((a,b)=>a+b,0); return ex.map(x=>x/s); }
+function denseForward(x, W, b){
+  const nOut = W[0].length;
+  const out = new Array(nOut).fill(0);
+  for(let j=0;j<nOut;j++){
+    let sum = b[j];
+    for(let i=0;i<x.length;i++) sum += x[i]*W[i][j];
+    out[j] = sum;
+  }
+  return out;
+}
+function runNetwork(features){
+  const w = AI_MODEL.weights;
+  const mu = AI_MODEL.norm.mu, sigma = AI_MODEL.norm.sigma;
+  const xn = features.map((v,i)=>(v-mu[i])/(sigma[i]||1e-8));
+  const a1 = relu(denseForward(xn, w.W1, w.b1));
+  const a2 = relu(denseForward(a1, w.W2, w.b2));
+  const z3 = denseForward(a2, w.W3, w.b3);
+  return softmax(z3);
+}
+
+function rgbToHsvPixel(r,g,b){
+  const max=Math.max(r,g,b), min=Math.min(r,g,b), delta=max-min;
+  const v=max; const s = max===0?0:delta/max;
+  let h=0;
+  if(delta!==0){
+    if(max===r) h = ((g-b)/delta) % 6;
+    else if(max===g) h = (b-r)/delta + 2;
+    else h = (r-g)/delta + 4;
+    h = h/6; if(h<0) h+=1;
+  }
+  return [h,s,v];
+}
+function clip01(x,lo,hi){ return Math.max(lo, Math.min(hi, x)); }
+
+function extractFeaturesFromImageData(imgData, size){
+  const d = imgData.data;
+  const n = size*size;
+  const gray = new Float64Array(n);
+  let rSum=0,gSum=0,bSum=0,hSum=0,sSum=0,vSum=0;
+  const sArr = new Float64Array(n);
+  let rgSum=0, ybSum=0;
+  const rgArr = new Float64Array(n), ybArr = new Float64Array(n);
+
+  for(let p=0;p<n;p++){
+    const r=d[p*4]/255, g=d[p*4+1]/255, b=d[p*4+2]/255;
+    rSum+=r; gSum+=g; bSum+=b;
+    const [h,s,v] = rgbToHsvPixel(r,g,b);
+    hSum+=h; sSum+=s; vSum+=v; sArr[p]=s;
+    const gy = 0.299*r+0.587*g+0.114*b;
+    gray[p]=gy;
+    const rg = r-g, yb = 0.5*(r+g)-b;
+    rgArr[p]=rg; ybArr[p]=yb; rgSum+=rg; ybSum+=yb;
+  }
+  const r_mean=rSum/n, g_mean=gSum/n, b_mean=bSum/n;
+  const h_mean=hSum/n, s_mean=sSum/n, v_mean=vSum/n;
+
+  let grayMean=0; for(let p=0;p<n;p++) grayMean+=gray[p]; grayMean/=n;
+  let grayVar=0; for(let p=0;p<n;p++) grayVar += (gray[p]-grayMean)**2; grayVar/=n;
+  const brightness_std = Math.sqrt(grayVar);
+
+  let sVar=0; for(let p=0;p<n;p++) sVar += (sArr[p]-s_mean)**2; sVar/=n;
+  const saturation_std = Math.sqrt(sVar);
+
+  const warm_cool = clip01(0.5+(r_mean-b_mean), 0, 1);
+
+  const rgMean=rgSum/n, ybMean=ybSum/n;
+  let rgVar=0, ybVar=0;
+  for(let p=0;p<n;p++){ rgVar+=(rgArr[p]-rgMean)**2; ybVar+=(ybArr[p]-ybMean)**2; }
+  rgVar/=n; ybVar/=n;
+  const colorfulness_raw = Math.sqrt(rgVar+ybVar) + 0.3*Math.sqrt(rgMean**2+ybMean**2);
+  const colorfulness = clip01(colorfulness_raw/0.6, 0, 1);
+
+  // manual 3x3 Sobel with edge-replicated padding
+  const kx=[[-1,0,1],[-2,0,2],[-1,0,1]], ky=[[-1,-2,-1],[0,0,0],[1,2,1]];
+  const get=(y,x)=>{ y=Math.max(0,Math.min(size-1,y)); x=Math.max(0,Math.min(size-1,x)); return gray[y*size+x]; };
+  const edges = new Float64Array(n);
+  for(let y=0;y<size;y++){
+    for(let x=0;x<size;x++){
+      let gx=0, gy2=0;
+      for(let i=-1;i<=1;i++) for(let j=-1;j<=1;j++){
+        const val = get(y+i,x+j);
+        gx += kx[i+1][j+1]*val;
+        gy2 += ky[i+1][j+1]*val;
+      }
+      edges[y*size+x] = Math.sqrt(gx*gx+gy2*gy2);
+    }
+  }
+  let edgeMean=0; for(let p=0;p<n;p++) edgeMean+=edges[p]; edgeMean/=n;
+  let edgeVar=0; for(let p=0;p<n;p++) edgeVar+=(edges[p]-edgeMean)**2; edgeVar/=n;
+  const edge_density = clip01(edgeMean/0.35, 0, 1);
+  const edge_std = clip01(Math.sqrt(edgeVar)/0.35, 0, 1);
+
+  let dark=0, light=0;
+  for(let p=0;p<n;p++){ if(gray[p]<0.25) dark++; if(gray[p]>0.75) light++; }
+  const dark_ratio = dark/n, light_ratio = light/n;
+
+  let symDiff=0;
+  for(let y=0;y<size;y++) for(let x=0;x<size;x++){ symDiff += Math.abs(gray[y*size+x] - gray[y*size+(size-1-x)]); }
+  symDiff/=n;
+  const symmetry = 1 - clip01(symDiff/0.3, 0, 1);
+
+  return [r_mean,g_mean,b_mean, h_mean,s_mean,v_mean, brightness_std,saturation_std, warm_cool,colorfulness, edge_density,edge_std, dark_ratio,light_ratio, symmetry];
+}
+
+function handleAiFile(file){
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = (e)=>{
+    const img = new Image();
+    img.onload = ()=>{
+      const preview = document.getElementById('aiPreview');
+      preview.src = e.target.result; preview.style.display='block';
+      const canvas = document.getElementById('aiCanvas');
+      const size = canvas.width;
+      const ctx = canvas.getContext('2d');
+      ctx.clearRect(0,0,size,size);
+      ctx.drawImage(img, 0, 0, size, size);
+      const imgData = ctx.getImageData(0,0,size,size);
+
+      document.getElementById('aiResult').innerHTML = `<div class="ai-loading"><span class="ai-spinner"></span>Анализируем изображение…</div>`;
+      setTimeout(()=>{
+        const features = extractFeaturesFromImageData(imgData, size);
+        const probs = runNetwork(features);
+        renderAiResult(probs);
+      }, 450);
+    };
+    img.src = e.target.result;
+  };
+  reader.readAsDataURL(file);
+}
+
+function renderAiResult(probs){
+  const styles = AI_MODEL.styles;
+  const order = probs.map((p,i)=>i).sort((a,b)=>probs[b]-probs[a]);
+  const top = styles[order[0]];
+
+  const matchRows = order.slice(0,3).map(i=>{
+    const pct = Math.round(probs[i]*100);
+    return `<div class="match-row"><span class="lbl">${styles[i].name}</span><div class="match-bar"><span style="width:${pct}%"></span></div><span class="pct">${pct}%</span></div>`;
+  }).join('');
+
+  const palette = top.palette.map(c=>`<div class="swatch" style="background:${c}"></div>`).join('');
+  const clothing = top.clothing.map(c=>`<li>${c}</li>`).join('');
+  const hobbies = top.hobbies.map(c=>`<li>${c}</li>`).join('');
+  const dirBadges = top.directions.map(id=>{
+    const d = directions.find(x=>x.id===id);
+    return d ? `<span class="badge">${d.name}</span>` : '';
+  }).join(' ');
+
+  document.getElementById('aiResult').innerHTML = `
+    <h3 style="margin:0 0 4px">${top.name}</h3>
+    <p class="muted" style="font-size:13px;margin:0 0 10px">${top.summary}</p>
+    ${matchRows}
+    <div class="palette-row">${palette}</div>
+    <div class="sugg-cols">
+      <div><h4>Одежда и образ</h4><ul>${clothing}</ul></div>
+      <div><h4>Смежные хобби</h4><ul>${hobbies}</ul></div>
+    </div>
+    <div class="ai-tags" style="margin-top:8px">${dirBadges}</div>
+    <button class="btn primary sm" style="margin-top:14px" onclick="toast('Рекомендации сохранены в подборку','i-check')">Сохранить подборку</button>`;
+}
+
+/* ---------------- init ---------------- */
+renderVideoFilters();
+renderVideoGrid();
+
+(function initSession(){
+  const sessionId = localStorage.getItem(SESSION_KEY);
+  if(!sessionId){ syncConsentUI(); return; }
+  const users = loadUsers();
+  const user = users.find(u=>u.id===sessionId);
+  if(user){ routeUserToApp(user); } else { syncConsentUI(); }
+})();
+
+</script>
+</body>
+</html>
